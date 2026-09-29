@@ -1,0 +1,800 @@
+{
+  "schema_version": 1,
+  "dataset_id": "h2lm-user-scans-20260929",
+  "scope": "selected_region_drafts_not_full_transcripts",
+  "permission": {
+    "source": "user_message_current_conversation",
+    "statement": "Đây dùng tạm 3 bản này về cơ bản k bảo mật nhạy cảm gì có thể công khai được",
+    "public_sharing_allowed_by_user": true,
+    "applies_to_document_ids": [
+      "da700",
+      "dt391",
+      "thach-bich"
+    ],
+    "not_a_general_license": true
+  },
+  "review": {
+    "method": "assistant_direct_visual_inspection",
+    "independent_human_review": "not_performed",
+    "training_eligible": false,
+    "model_accuracy_measured": false
+  },
+  "split_policy": "all_development_seed; no independent holdout claimed; all rescans/crops inherit document group; assignment templates remain in same leakage group",
+  "coordinate_space": "upright_render_normalized_0_1000_xyxy_pixel_edges",
+  "text_policy": "selected fields/regions only; multiline text visually transcribed, spacing normalized where layout-only; no silent spelling/legal correction; source filename is metadata only",
+  "documents": [
+    {
+      "id": "da700",
+      "filename": "2026.08.28 1542.QĐ.TCT QĐTL Tổ giám sát DA700.pdf",
+      "sha256": "48187f3d4d13869e51c0dc97bfd53c75c1618a4ed8ba76a79a678e6451ba20b6",
+      "pages": 2,
+      "family_id": "project-da700",
+      "leakage_group": "tct-supervision-team",
+      "features": [
+        "scan",
+        "native_rotation_270",
+        "handwritten_number_date",
+        "table_continues_next_page",
+        "stamp",
+        "signature",
+        "horizontal_scan_line"
+      ],
+      "split": "development_seed",
+      "source": "user_upload",
+      "scanner_model": null,
+      "scanner_dpi": null,
+      "rights_status": "user_stated_public_permission_not_independently_audited",
+      "authenticity_verified": false
+    },
+    {
+      "id": "dt391",
+      "filename": "2023.08.01_QD GNV DT 391 HAI DUONG.pdf",
+      "sha256": "3e9997051dbc2cfaefbcefbaef09956127271cadd772da400c4dacf8007f3bda",
+      "pages": 4,
+      "family_id": "project-dt391",
+      "leakage_group": "bqp-project-assignment-template",
+      "features": [
+        "scan",
+        "handwritten_number_date",
+        "small_italic_text",
+        "cross_page_paragraph",
+        "stamp",
+        "signature"
+      ],
+      "split": "development_seed",
+      "source": "user_upload",
+      "scanner_model": null,
+      "scanner_dpi": null,
+      "rights_status": "user_stated_public_permission_not_independently_audited",
+      "authenticity_verified": false
+    },
+    {
+      "id": "thach-bich",
+      "filename": "2026.06.16_3154.QD-BQP_QD giao nhiem vu của BQP (thach bich).pdf",
+      "sha256": "d451efdbbf6b91b990f7d64d46a72b0a1ef3a58747dcfb73ece91ac6454429cc",
+      "pages": 4,
+      "family_id": "project-thach-bich",
+      "leakage_group": "bqp-project-assignment-template",
+      "features": [
+        "scan",
+        "handwritten_number_date",
+        "acroform_signature_appearance",
+        "content_date_differs_signature_appearance",
+        "cross_page_paragraph",
+        "stamp",
+        "signature"
+      ],
+      "split": "development_seed",
+      "source": "user_upload",
+      "scanner_model": null,
+      "scanner_dpi": null,
+      "rights_status": "user_stated_public_permission_not_independently_audited",
+      "authenticity_verified": false
+    }
+  ],
+  "regions": [
+    {
+      "id": "da-number",
+      "document_id": "da700",
+      "page": 1,
+      "bbox_1000": [
+        227,
+        130,
+        410,
+        160
+      ],
+      "kind": "field",
+      "target": "1542/QĐ-TCT",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Read from the visible handwritten number; not inferred from filename."
+    },
+    {
+      "id": "da-date",
+      "document_id": "da700",
+      "page": 1,
+      "bbox_1000": [
+        542,
+        130,
+        872,
+        157
+      ],
+      "kind": "content_date",
+      "target": "28/08/2026",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "da-title",
+      "document_id": "da700",
+      "page": 1,
+      "bbox_1000": [
+        187,
+        209,
+        936,
+        278
+      ],
+      "kind": "text",
+      "target": "V/v thành lập Tổ giám sát thi công rà phá bom mìn, vật nổ\nDự án: Cải tạo, nâng cấp hệ thống kênh tiêu thoát nước vùng công nghiệp\nKim Động, Ân Thi, Yên Mỹ",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "da-table-first",
+      "document_id": "da700",
+      "page": 1,
+      "bbox_1000": [
+        157,
+        771,
+        936,
+        915
+      ],
+      "kind": "selected_table_columns",
+      "target": {
+        "columns": [
+          "TT",
+          "Chức danh"
+        ],
+        "rows": [
+          [
+            "1",
+            "Giám sát trưởng"
+          ],
+          [
+            "2",
+            "Giám sát viên"
+          ],
+          [
+            "3",
+            "Giám sát viên"
+          ],
+          [
+            "4",
+            "Giám sát viên"
+          ]
+        ]
+      },
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Only TT and Chức danh are transcribed; this is not a complete table transcription."
+    },
+    {
+      "id": "da-table-next",
+      "document_id": "da700",
+      "page": 2,
+      "bbox_1000": [
+        148,
+        79,
+        925,
+        171
+      ],
+      "kind": "selected_table_columns",
+      "target": {
+        "columns": [
+          "TT",
+          "Chức danh"
+        ],
+        "rows": [
+          [
+            "5",
+            "Giám sát viên"
+          ],
+          [
+            "6",
+            "Giám sát viên"
+          ]
+        ]
+      },
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Continuation of the same table from page 1; repeated header is not a staff row."
+    },
+    {
+      "id": "da-article-two",
+      "document_id": "da700",
+      "page": 2,
+      "bbox_1000": [
+        206,
+        170,
+        744,
+        196
+      ],
+      "kind": "text",
+      "target": "Điều 2. Nhiệm vụ, quyền hạn của Tổ giám sát thi công:",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "da-effect",
+      "document_id": "da700",
+      "page": 2,
+      "bbox_1000": [
+        158,
+        621,
+        953,
+        665
+      ],
+      "kind": "text",
+      "target": "Quyết định này có hiệu lực từ ngày ký đến khi hoàn thành nghiệm thu hoàn thành công tác tư vấn giám sát rà phá bom mìn, vật nổ dự án với Chủ đầu tư./.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Preserve the repeated words hoàn thành as shown; no editorial correction."
+    },
+    {
+      "id": "dt-number",
+      "document_id": "dt391",
+      "page": 1,
+      "bbox_1000": [
+        187,
+        144,
+        415,
+        174
+      ],
+      "kind": "field",
+      "target": "3464/QĐ-BQP",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-date",
+      "document_id": "dt391",
+      "page": 1,
+      "bbox_1000": [
+        522,
+        146,
+        910,
+        174
+      ],
+      "kind": "content_date",
+      "target": "01/08/2023",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-title",
+      "document_id": "dt391",
+      "page": 1,
+      "bbox_1000": [
+        182,
+        239,
+        950,
+        280
+      ],
+      "kind": "text",
+      "target": "Dự án Nâng cấp, mở rộng Đường tỉnh 391 đoạn từ thành phố Hải Dương\nđến đường trục Đông - Tây, tỉnh Hải Dương",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-margin",
+      "document_id": "dt391",
+      "page": 1,
+      "bbox_1000": [
+        91,
+        8,
+        205,
+        47
+      ],
+      "kind": "handwritten_note",
+      "target": null,
+      "status": "uncertain",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Do not guess the informal handwritten margin note or classify confidentiality from it."
+    },
+    {
+      "id": "dt-area",
+      "document_id": "dt391",
+      "page": 2,
+      "bbox_1000": [
+        197,
+        115,
+        758,
+        138
+      ],
+      "kind": "text",
+      "target": "d) Diện tích rà phá bom mìn, vật nổ: Khoảng 45,31ha.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-period",
+      "document_id": "dt391",
+      "page": 2,
+      "bbox_1000": [
+        196,
+        169,
+        814,
+        195
+      ],
+      "kind": "text",
+      "target": "e) Yêu cầu tiến độ rà phá bom mìn, vật nổ: Năm 2023-2025.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-executor",
+      "document_id": "dt391",
+      "page": 2,
+      "bbox_1000": [
+        152,
+        279,
+        955,
+        323
+      ],
+      "kind": "text",
+      "target": "b) Thi công rà phá bom mìn, vật nổ trên mặt bằng dự án: Tổng công ty Thành An/Bộ Quốc phòng.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-supervisor",
+      "document_id": "dt391",
+      "page": 2,
+      "bbox_1000": [
+        150,
+        331,
+        958,
+        372
+      ],
+      "kind": "text",
+      "target": "c) Giám sát thi công rà phá bom mìn, vật nổ trên mặt bằng dự án: Do chủ đầu tư tự tổ chức thực hiện.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-company-heading",
+      "document_id": "dt391",
+      "page": 3,
+      "bbox_1000": [
+        204,
+        230,
+        652,
+        253
+      ],
+      "kind": "text",
+      "target": "4. Tổng công ty Thành An/Bộ Quốc phòng:",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "dt-standard",
+      "document_id": "dt391",
+      "page": 3,
+      "bbox_1000": [
+        153,
+        669,
+        404,
+        690
+      ],
+      "kind": "field",
+      "target": "TCVN 10299-10:2014",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Literal reference in this document, not a claim about current legal validity."
+    },
+    {
+      "id": "dt-effect",
+      "document_id": "dt391",
+      "page": 4,
+      "bbox_1000": [
+        205,
+        160,
+        737,
+        186
+      ],
+      "kind": "text",
+      "target": "Điều 3. Quyết định này có hiệu lực kể từ ngày ký.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-number",
+      "document_id": "thach-bich",
+      "page": 1,
+      "bbox_1000": [
+        187,
+        142,
+        403,
+        170
+      ],
+      "kind": "field",
+      "target": "3154/QĐ-BQP",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-date",
+      "document_id": "thach-bich",
+      "page": 1,
+      "bbox_1000": [
+        508,
+        143,
+        910,
+        171
+      ],
+      "kind": "content_date",
+      "target": "16/06/2026",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-sign-date",
+      "document_id": "thach-bich",
+      "page": 1,
+      "bbox_1000": [
+        631,
+        17,
+        930,
+        70
+      ],
+      "kind": "signature_appearance",
+      "target": "Ký bởi: BỘ QUỐC PHÒNG\nNgày ký: 18-06-2026\n09:27:58 +07:00",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Visible AcroForm appearance only; not cryptographic signature validation or an effective-date determination."
+    },
+    {
+      "id": "tb-title",
+      "document_id": "thach-bich",
+      "page": 1,
+      "bbox_1000": [
+        229,
+        228,
+        871,
+        253
+      ],
+      "kind": "text",
+      "target": "Dự án Công viên cây xanh Thạch Bích, thành phố Quảng Ngãi",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-area",
+      "document_id": "thach-bich",
+      "page": 2,
+      "bbox_1000": [
+        210,
+        179,
+        723,
+        206
+      ],
+      "kind": "text",
+      "target": "d) Diện tích rà phá bom mìn, vật nổ: Khoảng 8,1 ha.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-period",
+      "document_id": "thach-bich",
+      "page": 2,
+      "bbox_1000": [
+        211,
+        238,
+        816,
+        266
+      ],
+      "kind": "text",
+      "target": "e) Yêu cầu tiến độ rà phá bom mìn, vật nổ: Năm 2026-2028.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-supervisor",
+      "document_id": "thach-bich",
+      "page": 2,
+      "bbox_1000": [
+        165,
+        330,
+        961,
+        377
+      ],
+      "kind": "text",
+      "target": "b) Giám sát thi công rà phá bom mìn, vật nổ trên mặt bằng dự án: Tổng công ty Thành An/Bộ Quốc phòng.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "tb-standard",
+      "document_id": "thach-bich",
+      "page": 3,
+      "bbox_1000": [
+        164,
+        520,
+        963,
+        570
+      ],
+      "kind": "field",
+      "target": "TCVN 10299-11:2025",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Literal reference in this document; do not infer replacement of another standard."
+    },
+    {
+      "id": "tb-supervision-details",
+      "document_id": "thach-bich",
+      "page": 3,
+      "bbox_1000": [
+        164,
+        620,
+        972,
+        750
+      ],
+      "kind": "text",
+      "target": "4. Tổng công ty Thành An/Bộ Quốc phòng:",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Heading only; the remainder of the paragraph is not transcribed here."
+    },
+    {
+      "id": "tb-effect",
+      "document_id": "thach-bich",
+      "page": 4,
+      "bbox_1000": [
+        214,
+        139,
+        750,
+        167
+      ],
+      "kind": "text",
+      "target": "Điều 3. Quyết định này có hiệu lực kể từ ngày ký.",
+      "status": "readable",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-table-count",
+      "prompt": "Trong quyết định DA700, danh sách Tổ giám sát có tổng cộng bao nhiêu người?",
+      "target": "6 người; trang 1 có TT 1–4, trang 2 tiếp TT 5–6.",
+      "evidence_ids": [
+        "da-table-first",
+        "da-table-next"
+      ],
+      "document_scope": [
+        "da700"
+      ],
+      "kind": "multi_page_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-table-roles",
+      "prompt": "Có bao nhiêu giám sát trưởng và giám sát viên trong danh sách DA700?",
+      "target": "1 giám sát trưởng và 5 giám sát viên.",
+      "evidence_ids": [
+        "da-table-first",
+        "da-table-next"
+      ],
+      "document_scope": [
+        "da700"
+      ],
+      "kind": "multi_page_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-two-roles",
+      "prompt": "Tổng công ty Thành An được giao cùng một vai trò ở dự án ĐT391 và Thạch Bích không?",
+      "target": "Không. ĐT391: thi công. Thạch Bích: giám sát thi công.",
+      "evidence_ids": [
+        "dt-executor",
+        "tb-supervisor"
+      ],
+      "document_scope": [
+        "dt391",
+        "thach-bich"
+      ],
+      "kind": "multi_document_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-two-areas",
+      "prompt": "Diện tích ghi trong từng quyết định ĐT391 và Thạch Bích là bao nhiêu?",
+      "target": "ĐT391: khoảng 45,31ha. Thạch Bích: khoảng 8,1 ha.",
+      "evidence_ids": [
+        "dt-area",
+        "tb-area"
+      ],
+      "document_scope": [
+        "dt391",
+        "thach-bich"
+      ],
+      "kind": "multi_document_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-date-types",
+      "prompt": "Ngày ở dòng địa danh/ngày tháng và ngày hiển thị chữ ký số của Thạch Bích có giống nhau không?",
+      "target": "Không. Dòng ngày tháng ghi 16/06/2026; phần hiển thị chữ ký số ghi 18-06-2026, 09:27:58 +07:00.",
+      "evidence_ids": [
+        "tb-date",
+        "tb-sign-date"
+      ],
+      "document_scope": [
+        "thach-bich"
+      ],
+      "kind": "date_type_disambiguation",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Only compare visible dates; do not decide legal validity or effective date."
+    },
+    {
+      "id": "q-number-dt",
+      "prompt": "Số quyết định ĐT391 nhìn thấy trên trang 1 là gì?",
+      "target": "3464/QĐ-BQP",
+      "evidence_ids": [
+        "dt-number"
+      ],
+      "document_scope": [
+        "dt391"
+      ],
+      "kind": "grounded_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-number-da",
+      "prompt": "Số quyết định DA700 nhìn thấy trên trang 1 là gì?",
+      "target": "1542/QĐ-TCT",
+      "evidence_ids": [
+        "da-number"
+      ],
+      "document_scope": [
+        "da700"
+      ],
+      "kind": "grounded_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-supervisor-dt",
+      "prompt": "Theo quyết định ĐT391, ai tổ chức giám sát thi công?",
+      "target": "Do chủ đầu tư tự tổ chức thực hiện.",
+      "evidence_ids": [
+        "dt-supervisor"
+      ],
+      "document_scope": [
+        "dt391"
+      ],
+      "kind": "grounded_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-periods",
+      "prompt": "Yêu cầu tiến độ ghi trong hai quyết định giao nhiệm vụ là những năm nào?",
+      "target": "ĐT391: 2023-2025. Thạch Bích: 2026-2028.",
+      "evidence_ids": [
+        "dt-period",
+        "tb-period"
+      ],
+      "document_scope": [
+        "dt391",
+        "thach-bich"
+      ],
+      "kind": "multi_document_qa",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": ""
+    },
+    {
+      "id": "q-budget-missing",
+      "prompt": "Quyết định DA700 được cung cấp có nêu số tiền tổng mức đầu tư không?",
+      "target": null,
+      "evidence_ids": [],
+      "document_scope": [
+        "da700"
+      ],
+      "kind": "insufficient_evidence",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "No amount found in the two supplied pages. Do not borrow amounts from other sources."
+    },
+    {
+      "id": "q-sign-valid",
+      "prompt": "Từ hình hiển thị chữ ký số, đã xác minh được tính hợp lệ mật mã của chữ ký chưa?",
+      "target": null,
+      "evidence_ids": [
+        "tb-sign-date"
+      ],
+      "document_scope": [
+        "thach-bich"
+      ],
+      "kind": "insufficient_evidence",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Appearance is not cryptographic validation; this pipeline does not perform validation."
+    },
+    {
+      "id": "q-margin-uncertain",
+      "prompt": "Ghi chú viết tay nhỏ ở góc trên trang 1 ĐT391 ghi chính xác gì?",
+      "target": null,
+      "evidence_ids": [
+        "dt-margin"
+      ],
+      "document_scope": [
+        "dt391"
+      ],
+      "kind": "uncertain_reading",
+      "review_status": "assistant_visual_draft",
+      "training_eligible": false,
+      "note": "Candidate label deliberately abstains; seek independent review instead of completing text."
+    }
+  ]
+}

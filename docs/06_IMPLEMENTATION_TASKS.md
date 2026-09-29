@@ -1,95 +1,66 @@
-# H2LM V1 — Trạng thái triển khai và SESSION HANDOFF
+# H2LM V1 — Trạng thái và SESSION HANDOFF
 
 ## Nguồn yêu cầu
 
-Đọc README → docs/00_PRODUCT_SPEC.md → 01_ARCHITECTURE.md → 02_DATA_AND_TEACHERS.md
-→ 03_ROADMAP.md → 05_TOKENIZER.md trước khi tiếp tục.
-Giữ phương án B: neural weights từ khởi tạo ngẫu nhiên, teacher chỉ tạo/kiểm tra dữ liệu có nguồn.
-Đích tham chiếu GTX 1070 8 GB; chưa có nghiệm thu GPU thật hay checkpoint model sản phẩm.
+Đọc README, docs/00_PRODUCT_SPEC.md, 01_ARCHITECTURE.md, 02_DATA_AND_TEACHERS.md,
+03_ROADMAP.md, 05_TOKENIZER.md, 07_CORPUS_AND_BENCHMARK.md, 09_SCAN_FIRST.md và
+10_REAL_SCAN_SEED.md trước khi tiếp tục. Giữ model vision-first, tiếng Việt/pháp lý,
+neural weights khởi tạo ngẫu nhiên; teacher chỉ hỗ trợ dữ liệu có nguồn/kiểm chứng.
+Đích GTX 1070 8 GB chưa nghiệm thu. Không có checkpoint model sản phẩm đọc hiểu PDF.
 
 ## Trạng thái
 
-| Task | Trạng thái | Bằng chứng / còn thiếu |
-|---|---|---|
-| M0 bootstrap | CPU CI đạt; PR #1 còn mở tại lúc khởi tạo M1-A | Head e135de2a8017d3801a7abb265508bd7b2967a8fe; run 36549909487, 3 tests đạt; CI cũ checkout merge a6d1d3dc5168ef768a3f74da2d795225389e68ee |
-| M1-A công cụ tokenizer và fixture | Engineering gate đạt, PR #2 còn mở | Head 5ddce928b934d91601039cea5f7e2562df983df6; run 36553295223 thành công; 40 tokenizer tests Windows, 44 full tests CPU |
-| M1-B1 importer + so sánh tokenizer | Engineering gate đạt; PR #3 mở, head 389cd0d; run 36557607218 thành công | Offline reviewed TXT registry, dev/holdout separation, bounded subprocess trials, resume, tests, docs |
-| M1-B2 corpus thật + benchmark đại diện | ACTIVE: thêm public Gazette seed; kiểm evidence thực chạy trên PR mới | 8 nguồn định trước, PDF text-layer/mechanical scope, near-dup + freeze + holdout; chưa corpus sản phẩm đã duyệt |
-| M1-B tổng thể | ACTIVE | M1-B1 công cụ không thay thế thu thập/kiểm định corpus thật |
-| M1 toàn milestone | ACTIVE | M1-A đạt không đồng nghĩa M1 nghiên cứu đã hoàn tất |
-| M2–M7 | NOT STARTED | Giữ dependency như roadmap; không pretrain model lớn trước corpus/tokenizer gates |
+| Task | Trạng thái và bằng chứng |
+|---|---|
+| M0 bootstrap | CPU CI đạt; PR #1; head e135de2, run 36549909487; 3 tests. Workflow cũ checkout merge a6d1d3d, không phải head trực tiếp. |
+| M1-A tokenizer | Engineering gate đạt; PR #2, head 5ddce92, run 36553295223; 40 Windows tokenizer / 44 full CPU tests. |
+| M1-B1 corpus tooling | Engineering gate đạt; PR #3, head 389cd0d, run 36557607218; 80 Windows / 84 local full tests. |
+| M1-B2 public corpus | ACTIVE; PR #4 head c0049c7, code CI 36562685102 đạt; acquisition 36562685281 lỗi SSL issuer. Chưa corpus đại diện và chưa sửa TLS trong các task scan. |
+| M1-SCAN-A | Engineering gate đạt; PR #5 head 902d16c, CI 36570835195 đạt; 54 scan tests local; 8 trang synthetic / 192 tile. Không phải nghiệm thu scan thật. |
+| M1-SCAN-B | Có ba PDF thật / 10 trang, 28 vùng nháp / 12 QA nháp; đã sửa AcroForm appearance. Kiểm CI trên PR head mới và evidence trong PR trước nghiệm thu remote. |
+| M1 tổng thể | ACTIVE; công cụ chạy không đồng nghĩa corpus/tokenizer đã khóa hoặc model đã thông minh. |
+| M2–M7 | Chưa pretrain model sản phẩm. Giữ dependency/corpus gate trong roadmap. |
 
-## Evidence M1-A trước push (lịch sử; CI mới đã đối chiếu ở bảng trên)
+Chi tiết lịch sử trước khi cô đọng bảng này còn trong Git tại head 902d16cf6139d16b36aa1fba044ef7f863222da4
+và các PR conversations. Không suy trạng thái merge từ bảng; đọc branch/PR/CI hiện tại.
 
-Môi trường thực thi local: Linux, Python 3.13, SentencePiece 0.2.1, PyTorch 2.10.0+cpu.
-Full suite: **44 passed**; compileall đạt. Có warning SWIG/PyTorch từ dependency, không phải lỗi test.
-Không có GTX 1070 hoặc Windows local trong lần thử này; chờ Windows CI riêng.
-Model M0 giữ nguyên, chỉ đổi package lazy import và tách dependency model để tokenizer không tải torch.
+## CURRENT SESSION HANDOFF — M1-SCAN-B
 
-Corpus fixture: 24 train / 12 validation / 12 test, tất cả là ví dụ tổng hợp, không phải luật thật.
-Tokenizer BPE: 1024 tokens. Validation 12/12 exact, 0 unknown, 391 tokens.
-Test 12/12 exact, 0 unknown, 386 tokens. Chỉ là số đo khôi phục chữ, không phải reasoning/OCR score.
-Có kiểm thử train lại cùng cấu hình ra cùng model bytes trong môi trường kiểm thử.
+Base: PR #5, head 902d16cf6139d16b36aa1fba044ef7f863222da4;
+base tree 6c18e081a7605f5f888d0eb511d417a92effcc6c.
+Nhánh mới: h2lm-real-scan-seed; PR base h2lm-scan-input-v1. Không merge, không đổi main.
 
-Local được dựng từ nội dung GitHub ở base SHA trên vì git clone trực tiếp từ container không kết nối được.
-Không giả định Git HEAD local là SHA remote. Reports ghi source hash và `code_revision: null` khi không có Git.
-CI mới checkout trực tiếp `pull_request.head.sha` và ghi bằng chứng trên code SHA thật.
-Kết quả CI sau push được ghi vào PR conversation/Actions để không tạo vòng lặp sửa evidence rồi lại đổi SHA.
+Người dùng cung cấp ba PDF và cho phép công khai; scope/hash/filename ở
+`data/scan_seed_20260929/draft_labels.json`. PDF và ảnh lớn giữ trong bundle hội thoại;
+Git chỉ chứa code, metadata, quyền được người dùng tuyên bố và nhãn nháp. Không suy quyền
+công khai sang các tài liệu khác. Không gọi API teacher hay dịch vụ trả phí.
 
-## SESSION HANDOFF — M1-B1
+Đã chạy cả 10 trang: DA700 2 trang/48 tile; ĐT391 4 trang/80 tile; Thạch Bích 4 trang/96 tile.
+File Thạch Bích bị bản cũ từ chối vì AcroForm có trường chữ ký số. Sửa bằng khởi tạo form
+sớm, giữ appearance/annotations; không rewrite PDF, không xác minh mật mã chữ ký, không
+thực thi document actions. XFA/unknown vẫn chặn. Không tắt TLS/không flatten để làm xanh.
 
-Nhánh triển khai `h2lm-m1b-corpus`, kế thừa head M1-A `5ddce928b934d91601039cea5f7e2562df983df6`.
-PR base `h2lm-m1-tokenizer`; giữ main và hai PR trước nguyên trạng. Đọc branch/PR/Actions thật
-trước khi tiếp tục, không suy merge từ bảng này. Đọc thêm docs/07_CORPUS_AND_BENCHMARK.md.
+DA700 có 6 dòng nhân sự: 4 ở trang đầu và 2 ở trang sau. Không dạy model chỉ đếm 4.
+Thạch Bích có dòng ngày 16/06/2026 khác phần appearance 18-06-2026: lưu hai field riêng,
+không kết luận hiệu lực. Nhãn/QA là assistant_visual_draft; training_eligible=false;
+chưa independent human review. Chỉ 28 vùng lựa chọn, không full transcript của 10 trang.
+Cả ba là development_seed, không gọi bộ mẫu nhỏ đã xem là benchmark độc lập.
 
-M1-B1 chỉ tạo công cụ chuẩn bị TXT đã duyệt và so sánh tokenizer trên validation; demo/CI dùng
-fixture tổng hợp, không có dataset pháp lý thật, không gọi teacher/API có phí, không có GPU runner.
-Nếu CI đỏ sửa M1-B1 trước; nếu xanh tiếp M1-B2 thu thập/kiểm định corpus thật, chống nhiễm theo
-family và gần đúng, khóa holdout/evaluation độc lập, chọn vocabulary. Chưa nhảy M2–M7.
-Các ngưỡng trong config pilot là cổng kỹ thuật dự kiến, không phải bằng chứng tính đại diện.
+Local scan harness lấy từ patch M1-SCAN-A và đối chiếu blob với GitHub trước sửa.
+Không có full git clone do DNS; không giả Git HEAD local. Đã chạy tách nhóm: 54 regression
+scan + 8 form + 27 review tests; compile đạt. Lượt gộp đầu bị tool timeout, không tính đạt.
+CI mới chạy full repository và test Windows/Linux trên đúng head. Kết quả cuối gắn SHA
+ở PR conversation để tránh vòng lặp ghi evidence rồi thay SHA mã nguồn.
 
-Base source ZIP trong hội thoại đã được kiểm hash toàn bộ Git tree: d5ea17d9b01d455ad96b95ee699b7b662d20ab76.
-Container không kết nối DNS để git clone; làm việc trên bản sao đã kiểm hash, không bịa Git HEAD local.
-CI mới phải checkout đúng PR head và lưu evidence; kết quả cuối ghi ở PR conversation để tránh vòng lặp đổi SHA.
+## Điểm tiếp tục
 
-Giới hạn còn lại: importer TXT bounded/in-memory; chưa PDF ingestion; chưa tự dò family/near-duplicate;
-chưa formal holdout freeze; resume giữa ứng viên tokenizer, chưa neural checkpoint/optimizer resume;
-chưa kiểm thử GTX 1070 thật, không có H2LM neural checkpoint đã hiểu tài liệu.
+Nếu CI task mới đỏ: sửa chính task mới trước. Sau đó rà nhãn độc lập, bổ sung transcript
+đúng phạm vi, nhãn unreadable/uncertain/missing và bộ scan đa dạng hơn. Không tự promotion
+nhãn AI thành human_verified. Các bản rescan/crop cùng document/family và mẫu quyết định
+trùng phải nằm cùng nhóm khi chia train/validation/test. Hai quyết định giao nhiệm vụ
+ĐT391/Thạch Bích đang cùng leakage group vì mẫu tương tự.
 
-## SESSION HANDOFF — M1-B2 public seed
-
-Base 389cd0d383bfcc2662764278de6ca5727992cbae, source tree bb0c77f26f0c91b69dad0f8bb77c3024591fbfd4
-đã đối chiếu với ZIP bằng toàn bộ Git tree hash trước sửa. Nhánh h2lm-m1b2-public-seed;
-PR base h2lm-m1b-corpus. Giữ main và PR trước nguyên trạng. Đọc docs/08_PUBLIC_LEGAL_SEED.md.
-
-Không suy job tải corpus đã thành công từ code. Đọc workflow public-legal-seed và CI trên đúng HEAD.
-Origin official_pdf_text là seed-only, không fake human review. Corpus pilot gate giữ nguyên.
-Chưa có neural checkpoint/GTX 1070 test, không teacher API, không chi tiền.
-Nếu acquisition thất bại do nguồn/robots/parser, báo đúng và sửa trong M1-B2; không fallback fixture.
-Nếu seed chạy xong, dùng snapshot và báo cáo để kiểm định/mở rộng corpus M1-B2 trước M2.
-Kết quả cuối ghi vào PR conversation gắn SHA, tránh sửa evidence rồi đổi code SHA vô hạn.
-
-## SESSION HANDOFF — M1-SCAN-A (ưu tiên mới: tài liệu scan lại)
-
-Nguồn tiếp tục thực tế: PR #4, head c0049c77a71a30ab7fad20136de5079a95194bb4,
-tree 809f06a90b0b957b9d4b66db893bd1814d977a2d. Không lấy ZIP M1-B2 cũ ghi đè nhánh.
-CI mã run 36562685102 thành công; acquisition run 36562685281 thất bại xác minh SSL certificate.
-Giữ lỗi này OPEN, không hạ bảo mật TLS. Corpus sản phẩm/tokenizer selection M1 vẫn ACTIVE.
-
-Theo yêu cầu mới, làm một task dữ liệu độc lập M1-SCAN-A: nhận PDF local kể cả scan không chữ,
-render/tile, giữ nguồn, tọa độ, giới hạn xử lý, preview và regression stress cases. Đây là bước
-chuẩn bị dữ liệu trong M1; không chuyển M2 pretraining. Spec scan và điểm sửa: docs/09_SCAN_FIRST.md.
-Nhánh h2lm-scan-input-v1 kế thừa PR #4; chưa merge các PR hay đổi cấu hình neural model.
-
-Bằng chứng trước push: 54 tests scan local đạt trên Linux/Python 3.13.5/PDFium wrapper 5.8.0/
-Pillow 12.3.0; 8 trang mô phỏng scan, 192 vùng ảnh tại cấu hình mặc định. Lỗi context manager
-PdfPage và cấu tạo PDF fixture lớp chữ ẩn được phát hiện rồi sửa, test chạy lại đạt.
-Đây là test riêng các module scan; không nhận bản dựng local M1-B1 là full remote PR #4.
-CI cập nhật cài scan extra, chạy cả test cũ lẫn test scan trên đúng HEAD và xuất git archive.
-Kết quả CI cuối ghi vào PR discussion, không suy GPU test từ CI CPU.
-
-Còn phải làm: lấy PDF scan thật được người dùng cho phép; đối chiếu từng vùng, gán unreadable/
-missing/uncertain trung thực; tách toàn bộ các bản scan/ảnh cắt/phiên bản cùng family về một split;
-đo CER và lỗi chữ số/dấu riêng, huấn luyện vision sau khi corpus gate đạt. Synthetic rescan
-không thay nghiệm thu scanner thật. Output scan chưa có text label, không train-ready.
-Chưa auto-rotate/deskew, chưa OCR, chưa teacher call, chưa neural train hay GPU nghiệm thu.
+M1-B2 vẫn cần sửa lỗi acquisition có xác minh TLS, corpus toàn văn đủ đại diện, đánh giá
+extract/vision đúng nguồn, freeze và holdout độc lập, rồi chốt tokenizer/model vocabulary.
+Không dùng exact token round-trip làm OCR/reasoning accuracy. Chưa tự rotate/deskew theo
+nội dung, chưa neural optimizer checkpoint/resume, chưa GPU runner hoặc GTX 1070 test.
