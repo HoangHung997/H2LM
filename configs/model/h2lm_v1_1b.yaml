@@ -1,0 +1,20 @@
+# Real dense parameters, all in the forward path. No count-padding tensors or weight cloning.
+# Byte vocabulary is an explicit prototype choice, NOT a frozen production tokenizer.
+name: h2lm-1b-byte-prototype
+vocab_size: 266
+d_model: 1792
+layers: 26
+heads: 14
+kv_heads: 2
+intermediate: 5120
+vision_dim: 768
+vision_layers: 12
+vision_heads: 12
+vision_intermediate: 2048
+patch_size: 16
+resampler_tokens: 32
+max_tiles: 16
+max_text_tokens: 2048
+max_total_tokens: 4096
+max_image_side: 512
+max_pages: 64
