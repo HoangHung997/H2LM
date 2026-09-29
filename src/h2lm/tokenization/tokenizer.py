@@ -70,7 +70,7 @@ class TokenizerConfig:
     def load(cls, path: str | Path) -> TokenizerConfig:
         raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
         if not isinstance(raw, dict):
-            raise ValueError("Tokenizer config must be a mapping")
+            raise TypeError("Tokenizer config must be a mapping")
         try:
             return cls(**raw)
         except TypeError as exc:
@@ -208,23 +208,20 @@ def train_tokenizer(
         raise ValueError("Training-text round trip failed; artifacts were not published")
     # Atomic create guard: never reuse another run, even after concurrent training.
     output.mkdir(parents=True, exist_ok=False)
-    try:
-        (output / "tokenizer.model").write_bytes(model)
-        (output / "tokenizer.vocab").write_text(
-            "\n".join(f"{i}\t{processor.id_to_piece(i)}" for i in range(tokenizer.vocab_size))
-            + "\n", encoding="utf-8",
-        )
-        manifest_bytes = Path(manifest).read_bytes()
-        if digest(manifest_bytes) != corpus.manifest_sha256:
-            raise ValueError("Manifest changed during training")
-        (output / "source_manifest.json").write_bytes(manifest_bytes)
-        # Metadata is the completion marker, written last.
-        (output / "metadata.json").write_text(
-            json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
-        )
-    except OSError:
-        # Incomplete run stays for diagnosis; loader will reject missing metadata.
-        raise
+    # Incomplete runs remain for diagnosis; metadata is the completion marker.
+    (output / "tokenizer.model").write_bytes(model)
+    (output / "tokenizer.vocab").write_text(
+        "\n".join(f"{i}\t{processor.id_to_piece(i)}" for i in range(tokenizer.vocab_size))
+        + "\n", encoding="utf-8",
+    )
+    manifest_bytes = Path(manifest).read_bytes()
+    if digest(manifest_bytes) != corpus.manifest_sha256:
+        raise ValueError("Manifest changed during training")
+    (output / "source_manifest.json").write_bytes(manifest_bytes)
+    # Metadata is the completion marker, written last.
+    (output / "metadata.json").write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+    )
     return metadata
 
 

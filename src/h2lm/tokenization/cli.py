@@ -54,7 +54,7 @@ def main() -> int:
         # ASCII-safe console output also works with legacy Windows code pages.
         print(json.dumps(result, ensure_ascii=True, indent=2))
         return 0
-    except (OSError, ValueError, RuntimeError) as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         message = f"H2LM tokenizer error: {exc}".encode("ascii", errors="backslashreplace").decode()
         print(message, file=sys.stderr)
         return 2

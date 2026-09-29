@@ -12,7 +12,12 @@ import pytest
 
 from h2lm.tokenization.corpus import digest, load_corpus
 from h2lm.tokenization.tokenizer import (
-    SPECIALS, H2Tokenizer, TokenizerConfig, evaluate, protect, restore,
+    SPECIALS,
+    H2Tokenizer,
+    TokenizerConfig,
+    evaluate,
+    protect,
+    restore,
     train_tokenizer,
 )
 
@@ -93,9 +98,9 @@ def test_artifact_guards(trained, tmp_path):
     tokenizer.require_model_vocab(tokenizer.vocab_size)
     with pytest.raises(ValueError, match="vocab_size"):
         tokenizer.require_model_vocab(tokenizer.vocab_size + 1)
+    model = (folder / "tokenizer.model").read_bytes()
     with pytest.raises(FileExistsError):
         train_tokenizer(TokenizerConfig(), MANIFEST, folder)
-    model = (folder / "tokenizer.model").read_bytes()
     for changed in [dict(metadata, codec_version="wrong"), dict(metadata, model_sha256="bad"),
                     dict(metadata, actual_vocab_size=1)]:
         with pytest.raises(ValueError):
@@ -201,13 +206,13 @@ def test_external_evaluation_checked_against_original_training(trained):
 def test_cli_and_no_torch_import(trained, tmp_path):
     _, folder, _ = trained
     env = dict(os.environ, PYTHONPATH=str(ROOT / "src"))
-    subprocess.run([sys.executable, "-c", "import sys; import h2lm.tokenization; "
-                    "assert 'torch' not in sys.modules"], env=env, check=True)
+    subprocess.run([sys.executable, "-c", ("import sys; import h2lm.tokenization; "
+                    "assert 'torch' not in sys.modules")], env=env, check=True)
     command = [sys.executable, "-m", "h2lm.tokenization.cli", "evaluate",
                "--tokenizer", str(folder), "--manifest", str(MANIFEST),
                "--report", str(tmp_path / "report.json")]
-    assert subprocess.run(command, env=env, capture_output=True).returncode == 0
-    assert subprocess.run(command, env=env, capture_output=True).returncode == 2
+    assert subprocess.run(command, env=env, capture_output=True, check=False).returncode == 0
+    assert subprocess.run(command, env=env, capture_output=True, check=False).returncode == 2
 
 
 def test_unigram_candidate(tmp_path):

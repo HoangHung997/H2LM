@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 SPLITS = {"train", "validation", "test"}
 
 
@@ -92,7 +91,7 @@ def load_corpus(
     root = manifest_path.parent
     for source in sources:
         if not isinstance(source, dict):
-            raise ValueError("Source must be an object")
+            raise TypeError("Source must be an object")
         source_id = required_string(source, "id")
         if source_id in source_ids:
             raise ValueError("Duplicate source id")
@@ -143,11 +142,11 @@ def load_corpus(
             try:
                 row = json.loads(line.decode("utf-8"))
                 if not isinstance(row, dict):
-                    raise ValueError("Record must be an object")
+                    raise TypeError("Record must be an object")
                 fields = {key: required_string(row, key) for key in
                           ("id", "document_id", "family_id", "text", "category")}
                 fields["text"].encode("utf-8", errors="strict")
-            except (ValueError, UnicodeError) as exc:
+            except (ValueError, TypeError, UnicodeError) as exc:
                 raise ValueError(f"Invalid record at {source_id}:{number}") from exc
             if fields["id"] in ids:
                 raise ValueError("Duplicate record id")
