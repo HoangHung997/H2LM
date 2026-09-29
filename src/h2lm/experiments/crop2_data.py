@@ -5,6 +5,7 @@ import io
 import json
 import random
 from functools import lru_cache
+from itertools import pairwise
 from pathlib import Path
 
 import torch
@@ -158,7 +159,7 @@ def load(path: Path, height: int, width: int, splits: tuple[str, ...]) -> list[d
         answer = [*encode(record['target']), 2]
         if len(prompt) + len(answer) > 64:
             raise ValueError('Sample too long; no silent truncation')
-        ctc_length = len(answer)-1 + sum(a == b for a,b in zip(answer[:-2], answer[1:-1]))
+        ctc_length = len(answer)-1 + sum(a == b for a,b in pairwise(answer[:-1]))
         if ctc_length > width//4:
             raise ValueError('CTC alignment length impossible')
         results.append({**record, 'tensor': image_tensor(image, height, width),
