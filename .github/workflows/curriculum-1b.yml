@@ -1,0 +1,82 @@
+name: H2LM 1B Evidence Curriculum Pilot
+on:
+  pull_request:
+    paths:
+      - 'src/h2lm/curriculum/**'
+      - 'tests/test_curriculum_q1.py'
+      - 'configs/training/curriculum_q1.yaml'
+      - '.github/workflows/curriculum-1b.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: h2lm-cq1-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  curriculum-full-1b:
+    if: github.event.repository.private == false && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: CPU environment only; no teacher service or personal runner
+        run: |
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[scan,dev]'
+      - name: Curriculum and checkpoint regression contracts
+        run: python -m pytest -q tests/test_curriculum_q1.py --junitxml=cq-evidence/tests.xml
+      - name: Full 1B FP32 finite curriculum training and free-generation evaluation
+        run: python -u -m h2lm.curriculum.train --output cq-run --allow-large
+      - name: Assert execution only, not intelligence
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          from h2lm.scale.config import ScaleConfig
+          from h2lm.scale.model import build, parameter_report
+          from h2lm.scale.storage import load_into, get_latest
+          import torch
+          torch.set_num_threads(2)
+          r = json.loads(pathlib.Path('cq-run/run/report-0048.json').read_text())
+          assert r['parameters']['unique_parameters'] == 1001571584
+          assert r['status'] == 'completed_finite_plan'
+          assert r['training']['steps_this_run'] == 48
+          assert all(a['parameters_in_backward'] == 1001571584 for a in r['audit'])
+          assert set(a['task'] for a in r['audit']) == {'read','locate','compare','table_sum','role','missing'}
+          assert r['evaluation']['count'] == 6 and not r['evaluation']['holdout_evaluated']
+          # Actual checkpoint reload in this separate process, not only an index inspection.
+          m = build(ScaleConfig(), initialize=False)
+          load_into(m, get_latest(pathlib.Path('cq-run/run')))
+          assert parameter_report(m)['initialized_storage']
+          print('Reloaded complete 1B checkpoint; quality remains unapproved.')
+          PY
+      - name: Collect compact reports and exact source, no multi-GB upload
+        if: always()
+        run: |
+          python - <<'PY'
+          import pathlib, shutil
+          dest = pathlib.Path('cq-evidence'); dest.mkdir(exist_ok=True)
+          for p in pathlib.Path('cq-run/run').glob('*.json'):
+              shutil.copy2(p, dest / p.name)
+          for p in pathlib.Path('cq-run/run').glob('checkpoint-*/index.json'):
+              shutil.copy2(p, dest / (p.parent.name+'-index.json'))
+          if pathlib.Path('cq-run/dataset/manifest.json').exists():
+              shutil.copy2('cq-run/dataset/manifest.json', dest/'dataset-manifest.json')
+          PY
+          git rev-parse HEAD > cq-evidence/source-sha.txt
+          git archive --format=zip --output=cq-evidence/H2LM-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h2lm-cq1-evidence
+          path: cq-evidence/
+          retention-days: 3
+# Checkpoint files are verified within the job; compact artifact is NOT downloadable weights.
+# Local full checkpoint is persisted separately. No unbounded automatic sequence of jobs.

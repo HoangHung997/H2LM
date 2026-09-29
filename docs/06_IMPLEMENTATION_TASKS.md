@@ -65,3 +65,35 @@ Không tiếp tục chờ chủ dự án thao tác: tự dùng dữ liệu tạo
 kiểm/sửa nhãn AI có provenance nhưng không tự đổi thành human_verified. Real development
 probe đã xem không gọi benchmark độc lập. Giữ rescans/crops/phiên bản và template liên quan
 cùng split/family. Lỗi TLS Công báo vẫn OPEN, không bypass. GTX 1070 8 GB chưa nghiệm thu.
+
+## CURRENT HANDOFF — CQ-01 (supersedes previous next-step scope)
+
+User yêu cầu đào tạo 1B để nhìn scan và suy luận tốt nhất có thể, không chờ họ vận hành.
+Base thực tế: PR #9, head 138ed6ea82299eeb77fbab67621fe822a38271f9 / tree
+810703d380c54e36ebdf38aba8c4b2e1630bf33e. Source ZIP từ artifact 11050340123 đã kiểm SHA256
+và Git tree khớp. Đây là full source được dựng local có commit tái dựng riêng, không bịa
+local HEAD là remote HEAD. Đọc docs/14_TRAINING_CURRICULUM.md trước khi tiếp tục.
+
+Nhánh CQ-01: h2lm-curriculum-quality-v1, base h2lm-scale-1b. Không merge/đổi main/các PR cũ.
+Giữ 1.001.571.584 tham số hiện trên GitHub; không sử dụng ZIP cũ có kiến trúc 1.000.032.768.
+Artifact base chỉ có index/report, không weights; lượt CQ-01 khởi tạo từ đầu có khai báo,
+không gọi là đã resume model cũ. Không nhập teacher weights, không gọi API/GPU trả phí.
+
+Có factory 96 family /1152 bài: 768 train,192 validation,192 holdout; giữ cặp phản chứng và
+các biến thể cùng split. Sáu task: read,locate,compare,table_sum,role,missing. Nhãn solver
+cho thẻ giả lập, không tư vấn luật hay gold scan thật. Giữ input 256x256 không âm thầm resize.
+Training curriculum 48 bước, schedule warmup/cosine, loss answer/evidence/syntax phân biệt.
+Chấm sáu cặp validation định trước với ảnh thật/blank/counterfactual, không chấm holdout.
+Checkpoint/resume có contract model/source/data/plan; pilot SGD không momentum/global clip
+và không phải trainer AdamW production. CI xanh không đồng nghĩa chất lượng AI xanh.
+
+32 tests CQ-01 local ban đầu đạt; kết quả full repository/training cuối và số step/token
+thực được ghi riêng trong PR conversation/report theo đúng head cuối. Không lấy CI cũ
+thay CI mới. Không gọi việc tạo1152 mẫu là đã học hết1152 mẫu. Không báo ảnh mô phỏng là
+scan vật lý. Chưa có pretraining dài hạn, benchmark thực độc lập hoặc GTX1070 nghiệm thu.
+
+Điểm tiếp tục: sửa CQ-01 nếu có lỗi; đánh giá read+evidence và thất bại sinh tự do trước khi
+mở rộng. Triển khai nền ngôn ngữ/vision cùng corpus đủ đa dạng, mục tiêu thật theo các pha
+trong docs/14. Dùng nhãn AI có provenance và mức tin cậy rõ, không tự đổi thành human_verified.
+Ba PDF người dùng chỉ là development đã được xem; không đưa cùng bản scan/template vào
+train và test. Lỗi acquisition TLS vẫn OPEN, không bypass. Không dịch vụ chạy nền vô hạn.

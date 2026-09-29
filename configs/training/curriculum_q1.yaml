@@ -1,0 +1,10 @@
+# Finite research pilot; NOT a claim of optimal production hyperparameters.
+steps: 48
+seed: 404
+peak_lr: 0.0003
+floor_lr: 0.00003
+warmup: 6
+seconds: 900
+eval_pairs: 6
+max_new_tokens: 12
+threads: 2
