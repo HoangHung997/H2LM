@@ -1,77 +1,62 @@
 # H2LM V1 — Trạng thái và SESSION HANDOFF
 
-## Nguồn yêu cầu
-
 Đọc README, docs/00_PRODUCT_SPEC.md, 01_ARCHITECTURE.md, 02_DATA_AND_TEACHERS.md,
-03_ROADMAP.md và tài liệu task hiện tại. Giữ vision-first/document-first, đặc biệt PDF
-in rồi scan lại bằng máy; tiếng Việt/pháp lý; random weights theo phương án B. Teacher
-chỉ hỗ trợ dữ liệu, không nhập weights hay mặc định nhãn AI đúng. Đích GTX 1070 8 GB chưa
-nghiệm thu. Source/config phải mở và sửa được; không có lõi đóng kín.
+03_ROADMAP.md và tài liệu task hiện tại trước sửa. Vision-first, PDF in rồi scan lại tiếng
+Việt/pháp lý là ưu tiên. Random weights, teacher chỉ hỗ trợ dữ liệu; source/config mở được.
+Chủ dự án yêu cầu tự tìm cách train, không chờ họ gán nhãn/cài runner/bật PC. Không chi tiền
+API/GPU hoặc phát hành thêm hồ sơ ngoài phạm vi đã cho phép.
 
-## Trạng thái và evidence lịch sử
+## Trạng thái
 
-| Task | Trạng thái / bằng chứng |
+| Task | Bằng chứng / giới hạn |
 |---|---|
-| M0 bootstrap | CPU CI đạt; head e135de2, run 36549909487; 3 tests, workflow cũ checkout merge a6d1d3d. |
-| M1-A tokenizer | Engineering gate đạt; PR #2, head 5ddce92, run 36553295223; 40 Windows / 44 full CPU tests. |
-| M1-B1 corpus tooling | Engineering gate đạt; PR #3, head 389cd0d, run 36557607218; 80 Windows / 84 local full tests. |
-| M1-B2 public corpus | ACTIVE; PR #4 head c0049c7, code CI 36562685102 đạt; acquisition 36562685281 lỗi SSL issuer. Không tắt TLS. |
-| M1-SCAN-A | Engineering gate đạt; PR #5 head 902d16c, run 36570835195; 54 scan tests local, 8 synthetic pages / 192 tiles. |
-| M1-SCAN-B | Engineering gate đạt; PR #6 head 6151fa0, run 36582948020; 199 full CPU tests. Ba PDF thật / 10 trang, 28 vùng nháp / 12 QA nháp, đã giữ AcroForm appearance. |
-| M1-EXP-01 neural micro training | Đã chạy local random-weight model 710616 tham số / 1000 bước; cần đối chiếu CI và training job trên PR head cuối. Chi tiết docs/11_NEURAL_MICRO_EXPERIMENT.md. |
-| M1 tổng thể | ACTIVE: corpus/tokenizer sản phẩm chưa khóa. |
-| M2–M7 sản phẩm | Chưa pretrain model lớn/production; thử nghiệm vi mô không thay gate chất lượng. |
+| M0 | CPU bootstrap, PR #1 head e135de2, run 36549909487. |
+| M1-A | Tokenizer tooling, PR #2 head 5ddce92, run 36553295223 đạt. |
+| M1-B1 | Corpus tooling, PR #3 head 389cd0d, run 36557607218 đạt. |
+| M1-B2 | ACTIVE; PR #4 c0049c7; acquisition 36562685281 lỗi SSL issuer. TLS không tắt. |
+| M1-SCAN-A | Engineering đạt; PR #5 902d16c, run 36570835195. |
+| M1-SCAN-B | 3 PDF thật/10 trang, nhãn AI nháp; PR #6 6151fa0, run 36582948020, 199 CPU tests. |
+| M1-EXP-01 | Neural 710616 tham số/1000 bước; PR #7 5bb0ea2, CI 36588561504 và train 36588561433 đạt; 223 CPU tests. Real DA700 probe 0/2, chưa tổng quát hóa. |
+| M1-EXP-02 | Thử đọc trường số/ngày bằng CNN+decoder; local train/probe đã chạy. Phải đối chiếu CI và training trên head PR mới trước nghiệm thu remote. Docs/12_CROP_GENERALIZATION.md. |
+| M1 sản phẩm | ACTIVE, corpus/tokenizer chưa khóa. |
+| M2–M7 sản phẩm | Chưa pretrain model sản phẩm/GTX 1070 nghiệm thu; các micro experiments không thay gate. |
 
-Lịch sử bàn giao chi tiết còn ở commit 6151fa0ccc88b59eb63f2663131f4b74be7e6442,
-các PR conversations và docs/05 đến docs/10. Không suy trạng thái merge từ bảng này;
-đọc branch/HEAD/open PR/CI thật trước khi tiếp tục. Không ghi đè main hay nhánh cũ.
+## CURRENT SESSION HANDOFF — M1-EXP-02
 
-## CURRENT SESSION HANDOFF — M1-EXP-01
+Base PR #7 head 5bb0ea21db47086373da6c7f7f20812804858f16,
+tree 984191064ed12b5e80fc12e007678ff18a8fa9ea. Nhánh mới h2lm-crop-generalization-v2,
+PR base h2lm-neural-micro-training. Giữ main và các PR trước nguyên trạng, không suy merge
+từ bảng: đọc branch/HEAD/open PR/Actions thật. Lịch sử đầy đủ nằm trong Git/PR trước.
 
-User yêu cầu: “Tiếp tục đi bạn tự tìm cách để huấn luyện đi k phụ thuộc vào tôi nữa”.
-Tự xử lý kỹ thuật bằng tài nguyên hiện có, không yêu cầu họ gán nhãn/cài runner/bật PC để
-bắt đầu. Không tự thuê GPU, gọi API trả phí, thay quyền repo hay upload hồ sơ ngoài phạm vi.
-Base PR #6: 6151fa0ccc88b59eb63f2663131f4b74be7e6442,
-tree eae5528e743139db8454b1a5d2a44584c878a393.
-Nhánh mới: h2lm-neural-micro-training, PR base h2lm-real-scan-seed.
+Một task nghiên cứu có giới hạn: mở rộng khỏi hai số 1–12 sang trường số hiệu/ngày nhiều
+ký tự, train từ đầu bằng 1200 ảnh lập trình + 96 validation đáp án không trùng. Giữ tỷ lệ
+crop chữ nhật; CNN + cross-attention decoder 524852 tham số. CTC chỉ là loss phụ, không OCR
+text trung gian, không input đáp án/tên file vào predict. Kiến trúc one-line thử nghiệm
+không thay kiến trúc model sản phẩm hoặc xóa năng lực/code EXP-01.
 
-Đây là exception có giới hạn để thử neural thật trong lúc corpus production chưa hoàn tất.
-Không đổi nhãn gốc assistant_visual_draft / training_eligible=false. Cho phép opted-in
-silver AI trong experiment_only, không tự promotion thành human_verified/gold hay đưa
-vào benchmark nghiệm thu sản phẩm. Không cần người dùng bấm duyệt từng trường để chạy
-thử, nhưng phải báo chính xác mức tin cậy của nhãn và kết quả.
+Local synthetic-only: 1800 bước, 88/96 validation khớp, blank 0/96, wrong-image giữ đáp án
+cũ 0/96 và đọc khớp ảnh thay thế 88/96. Sáu crop thật chưa train: 0/6 theo nhãn nháp.
+Thử adaptation riêng 4 crop DT391/Thạch Bích dạng silver, DA700 không vào loss. Lượt thực
+chạy local fit 4/4, probe 0/2, synthetic validation 89/96; báo cáo chi tiết được giữ lại.
+Không gọi 4/4 fit là model chính xác 100%, không so 88/96 trực tiếp với EXP-01 16/32 vì khác tập.
 
-Đã triển khai generator ảnh/câu hỏi có nhãn chương trình; byte codec riêng cho micro;
-answer-only loss cân bằng từng mẫu; resampler hai dải học được; auxiliary visual reading
-head cho dữ liệu tổng hợp (không dùng khi generation); gradient clipping; checkpoint model,
-optimizer, RNG; config/data/source hash; single-writer lock; test chạy liền và resume khớp.
-Causal core H2LM sản phẩm giữ nguyên; thay encoder/resampler chỉ trong make_model của experiment.
+Local là harness dựa trên gói source chạy checkpoint; các dependency đã kiểm Git blob trên
+base, không full clone/full repository regression. 27 tests mới local đạt. Có test resume
+bitwise, causal mask, bỏ CTC khi inference, dữ liệu/tọa độ/nhãn/hash/silver-opt-in. Lint và
+full regression cần đối chiếu CI đúng SHA; không dùng CI cũ cho bản mới. Workflow mới train
+CPU GitHub bằng ảnh tổng hợp, không cần PC người dùng và không tải PDF riêng vào Actions.
+Kết quả cuối ghi trong PR conversation theo SHA để tránh vòng lặp cập nhật tài liệu rồi đổi SHA.
 
-Đã chạy bốn cấu hình/phương pháp thử local. Các lượt đầu có loss giảm nhưng che ảnh vẫn
-trả lời gần như cũ. Lượt cuối tăng phụ thuộc ảnh: synthetic train 98/128 so với che ảnh
-10/128; validation 15/32 so với 4/32. Bốn crop thật đã học 4/4 theo silver; hai crop DA700
-không train 0/2. Đây là bộ development đã quan sát/tinh chỉnh, không independent test.
-Không báo fit 4/4 thành OCR accuracy hay hiểu luật. Chi tiết và giới hạn trong docs/11.
+## Điểm tiếp tục
 
-Local là harness với các module dùng trong huấn luyện khớp blob trên base; git clone từ
-container vẫn lỗi DNS, không giả Git HEAD local/full repository regression. 24 tests mới
-local đạt, compile đạt. CI hiện có chạy full repository; workflow micro-neural mới tự train
-1.000 bước bằng CPU trên PR cùng repo và xuất checkpoint, không tải tài liệu người dùng.
-CI/checkpoint cuối phải đọc Actions theo đúng SHA và ghi evidence ở PR conversation.
-Không coi việc tạo YAML là đã có kết quả remote. Các cảnh báo dependency không giấu đi.
+Nếu CI đỏ, sửa chính EXP-02 trước. Khi xanh, đọc các lỗi số/ngày trên ảnh mới và scan thật:
+bố cục dòng địa danh/ngày nhiều từ, chữ viết tay và phân bố ảnh khác render. Tự mở rộng dữ
+liệu có nguồn/nhãn chương trình; có thể dùng silver trong experiment riêng nhưng không tự
+nâng thành human_verified. Probe đã xem không gọi là test độc lập. Giữ toàn bộ bản scan,
+ảnh crop và mẫu văn bản liên quan cùng family/leakage group, không dùng vào cả train/test.
 
-## Điểm tiếp tục không cần chờ chủ dự án
-
-Nếu CI đỏ: sửa chính M1-EXP-01 trước. Khi xanh: dùng checkpoint/report để cải thiện khả
-năng tổng quát hóa ảnh thực; tăng đa dạng font/bố cục/chất lượng dữ liệu có nhãn tự tạo;
-tự kiểm tra scan đã được cho phép, dùng silver có nguồn và đo riêng. Chưa tự tuyên bố đã
-có verifier độc lập. Không dùng lại các mẫu đã học làm test độc lập, không chia rescans/crops
-cùng document/family/leakage group sang các split khác. Lỗi acquisition SSL vẫn OPEN.
-
-Ba PDF người dùng được phép công khai chỉ đúng scope/hash của data/scan_seed_20260929;
-không suy sang tài liệu khác. Chỉ sáu vùng số/ngày tham gia micro run, không full transcript
-10 trang hoặc bộ QA/bảng đầy đủ. DA700 là real development probe, không mẫu test niêm phong.
-
-Mục tiêu kế tiếp là đường học vision hiệu quả và dữ liệu rộng hơn, không vội tăng model
-2–3B, không hứa tương thích Ollama/GGUF hoặc chạy tốt GTX 1070 khi chưa đo. Không có training
-service chạy vô hạn sau chat; job đã được khởi chạy có giới hạn và tự lưu artifact theo workflow.
+Các bộ nguồn thật: chỉ ba PDF user đã cho phép theo data/scan_seed_20260929. Registry nhãn
+gốc vẫn là assistant_visual_draft, không được đổi âm thầm. Chưa toàn văn đủ đại diện, chưa
+chốt tokenizer, chưa gán nhãn bảng/pháp lý đầy đủ để train, chưa speech/video/agent stack.
+Lỗi SSL Công báo vẫn OPEN, không bypass TLS. Không hứa tương thích Ollama/GGUF hay hiệu năng
+GTX 1070. Mọi job mô tả trong bàn giao là đợt giới hạn, không dịch vụ train nền vô thời hạn.
