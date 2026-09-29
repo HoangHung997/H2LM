@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError
-from urllib.parse import unquote, urljoin, urlsplit
+from urllib.parse import parse_qs, unquote, urljoin, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from urllib.robotparser import RobotFileParser
 
@@ -91,8 +91,16 @@ def discover_pdf(html: bytes, landing: str, code: str) -> str:
     found = set()
     for link in parser.hrefs:
         link = urljoin(landing, link)
-        path = unquote(urlsplit(link).path)
-        if path.lower().endswith(".pdf") and identifier(code) in identifier(path.split("/")[-1]):
+        parts = urlsplit(link)
+        filename = unquote(parts.path.split("/")[-1])
+        # Gazette's official download links use a stream endpoint with file_name,
+        # not a .pdf path. Accept only that exact observed endpoint and host.
+        if parts.hostname == "g7.cdnchinhphu.vn" and parts.path == "/api/download/stream":
+            names = parse_qs(parts.query).get("file_name", [])
+            if len(names) != 1:
+                raise ValueError("Ambiguous Gazette stream filename")
+            filename = names[0]
+        if filename.lower().endswith(".pdf") and identifier(code) in identifier(filename):
             # Source sometimes publishes http hrefs; request the identical resource via HTTPS only.
             if link.startswith("http://"):
                 link = "https://" + link[7:]

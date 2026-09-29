@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -15,7 +15,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    name = datetime.now().strftime("%Y%m%d-%H%M%S-") + uuid4().hex[:8]
+    name = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-") + uuid4().hex[:8]
     output = args.output or root / "artifacts/public-legal-seed" / name
     run_seed(root / "data/public_legal_seed/catalog.json",
              root / "configs/tokenizer/h2lm_comparison_official_seed.yaml",

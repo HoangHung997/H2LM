@@ -12,7 +12,6 @@ from .seed_provenance import SCOPE
 from .tokenizer import H2Tokenizer, evaluate
 
 
-
 def shingles(text: str, width: int = 5) -> set[str]:
     words = re.findall(r"\w+", unicodedata.normalize("NFC", text).casefold())
     return {" ".join(words[i:i + width]) for i in range(max(0, len(words) - width + 1))}
