@@ -33,11 +33,14 @@ def image_tensor(path: Path, size: int) -> torch.Tensor:
     with Image.open(path) as image:
         if image.width * image.height > 16_000_000:
             raise ValueError("Oversized source image")
-        with image.convert("L") as gray, ImageOps.contain(gray, (size, size)) as fitted:
-            with Image.new("L", (size, size), 255) as canvas:
-                canvas.paste(fitted, ((size - fitted.width) // 2, (size - fitted.height) // 2))
-                return torch.tensor(list(canvas.getdata()), dtype=torch.float32).view(
-                    1, size, size) / 127.5 - 1.0
+        with (
+            image.convert("L") as gray,
+            ImageOps.contain(gray, (size, size)) as fitted,
+            Image.new("L", (size, size), 255) as canvas,
+        ):
+            canvas.paste(fitted, ((size - fitted.width) // 2, (size - fitted.height) // 2))
+            return torch.tensor(list(canvas.getdata()), dtype=torch.float32).view(
+                1, size, size) / 127.5 - 1.0
 
 
 def prepare(output: Path, real_review: Path | None = None, allow_silver: bool = False) -> dict:
