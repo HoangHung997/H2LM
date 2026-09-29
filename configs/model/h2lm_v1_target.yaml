@@ -1,0 +1,42 @@
+name: h2lm-v1-target
+status: design-envelope-not-locked
+
+# Đây là hướng thiết kế, không phải config huấn luyện cuối.
+# Mọi giá trị sẽ được khóa bằng benchmark + memory profile.
+
+model:
+  vocab_size: 65536
+  max_text_tokens: 8192
+  d_model: 2048
+  num_layers: 24
+  num_heads: 16
+  mlp_ratio: 4.0
+  dropout: 0.0
+
+vision:
+  image_size: 1024
+  patch_size: 16
+  in_channels: 3
+  d_vision: 768
+  num_layers: 12
+  num_heads: 12
+  high_resolution_tiling: true
+  dropout: 0.0
+
+fusion:
+  type: prefix_projector
+  future_candidates:
+    - learned_resampler
+    - cross_attention
+
+deployment:
+  target_gpu: NVIDIA GeForce GTX 1070
+  target_vram_gb: 8
+  preferred_quantization:
+    - int4
+    - int5
+
+training:
+  final_hardware: cloud_or_server_gpu
+  initialization: random
+  teacher_distillation_data: true
