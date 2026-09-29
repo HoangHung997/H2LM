@@ -103,11 +103,12 @@ def validate_seed(seed: dict[str, Any]) -> None:
         if any(r not in region_ids or region_ids[r]["document_id"] not in scope
                for r in question.get("evidence_ids", [])):
             raise ValueError("Question references unknown or out-of-scope evidence")
-        if question.get("target") is not None:
-            if not question.get("evidence_ids") or any(
+        if question.get("target") is not None and (
+            not question.get("evidence_ids") or any(
                 region_ids[r]["status"] != "readable" for r in question["evidence_ids"]
-            ):
-                raise ValueError("A positive answer requires readable image evidence")
+            )
+        ):
+            raise ValueError("A positive answer requires readable image evidence")
         if question.get("review_status") != "assistant_visual_draft" or question.get(
             "training_eligible"
         ) is not False:

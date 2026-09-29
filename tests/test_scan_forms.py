@@ -67,11 +67,14 @@ def test_static_signature_appearance_is_rendered_without_rewriting(tmp_path):
     with Image.open(out / report["pages"][0]["page"]["path"]) as image:
         red, green, blue = image.getpixel((50, 50))
         assert red > 200 and green < 50 and blue < 50
-        with pdfium.PdfDocument(source) as pdf, closing(pdf[0]) as page:
-            with closing(page.render(scale=1, may_draw_forms=False,
-                                     draw_annots=False, rev_byteorder=True)) as bitmap:
-                with bitmap.to_pil().convert("RGB") as omitted:
-                    assert ImageChops.difference(image, omitted).getbbox() is not None
+        with (
+            pdfium.PdfDocument(source) as pdf,
+            closing(pdf[0]) as page,
+            closing(page.render(scale=1, may_draw_forms=False,
+                                draw_annots=False, rev_byteorder=True)) as bitmap,
+            bitmap.to_pil().convert("RGB") as omitted,
+        ):
+            assert ImageChops.difference(image, omitted).getbbox() is not None
 
 
 @pytest.mark.parametrize("form_type", [-1, 2, 3, 999])
