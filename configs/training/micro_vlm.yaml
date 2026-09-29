@@ -1,0 +1,16 @@
+# Engineering experiment only. Does not lock the production tokenizer/model.
+steps: 1000
+batch_size: 8
+learning_rate: 0.001
+seed: 29
+threads: 2
+seconds: 300
+save_every: 100
+image_size: 128
+patch_size: 16
+d_model: 96
+vision_layers: 1
+text_layers: 2
+max_text_tokens: 96
+max_new_tokens: 32
+allow_silver: false

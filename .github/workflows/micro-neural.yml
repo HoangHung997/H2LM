@@ -1,0 +1,49 @@
+name: H2LM Neural Micro Experiment
+on:
+  pull_request:
+    paths:
+      - 'src/h2lm/experiments/**'
+      - 'configs/training/**'
+      - 'tests/test_micro_neural.py'
+      - '.github/workflows/micro-neural.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: micro-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train-cpu:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU training dependencies
+        run: |
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[scan,dev]'
+      - name: Check checkpoint resume and image-text contracts
+        run: python -m pytest -q tests/test_micro_neural.py --junitxml=artifacts/neural-tests.xml
+      - name: Train random-weight H2LM on generated image QA (no external services)
+        run: python -u -m h2lm.experiments.cli --output artifacts/micro
+      - name: Check actual optimization and save exact source
+        run: |
+          python -c "import json,pathlib; p=pathlib.Path('artifacts/micro/run'); r=json.loads((p/'report-001000.json').read_text()); assert r['completed_steps'] and r['weights_changed'] and r['reload_matches']; assert r['final_train_loss'] < r['initial_train_loss']; ref=json.loads((p/'latest.json').read_text()); [f.unlink() for f in p.glob('step-*.pt') if f.name != ref['file']]"
+          git rev-parse HEAD > artifacts/micro/source-sha.txt
+          git archive --format=zip --output=artifacts/micro/H2LM-source.zip HEAD
+      - name: Save checkpoint and reports (not production approval)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2lm-neural-micro-cpu
+          path: artifacts/
+          retention-days: 7
