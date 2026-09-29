@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Datasets and model artifacts
+data/raw/
+data/processed/
+artifacts/
+checkpoints/
+runs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.gguf
+
+# OS
+.DS_Store
+Thumbs.db
