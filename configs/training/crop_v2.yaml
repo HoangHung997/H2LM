@@ -1,0 +1,15 @@
+# EXP-02: single-line Vietnamese number/date fields. Not a production model configuration.
+steps: 1800
+batch_size: 16
+learning_rate: 0.001
+ctc_weight: 0.3
+seed: 29
+data_seed: 208
+threads: 2
+seconds: 480
+save_every: 300
+height: 48
+width: 320
+d_model: 96
+train_images: 1200
+validation_images: 96
