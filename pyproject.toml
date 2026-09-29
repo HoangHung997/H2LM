@@ -4,19 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "h2lm"
-version = "0.1.0"
+version = "0.2.0"
 description = "H2LM V1 - Vietnamese legal document vision-language model research code"
 requires-python = ">=3.10"
-dependencies = [
-  "torch>=2.3",
-  "PyYAML>=6.0",
-]
+dependencies = ["PyYAML>=6.0,<7"]
 
 [project.optional-dependencies]
-dev = [
-  "pytest>=8.0",
-  "ruff>=0.6",
-]
+model = ["torch>=2.3"]
+tokenizer = ["sentencepiece==0.2.1"]
+dev = ["pytest>=8.0,<10", "ruff>=0.6"]
+
+[project.scripts]
+h2lm-tokenizer = "h2lm.tokenization.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

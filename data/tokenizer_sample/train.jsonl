@@ -1,0 +1,24 @@
+{"id": "train-001", "document_id": "doc-train-001", "family_id": "family-train-001", "category": "structure", "text": "CHƯƠNG I\nĐiều 1. Phạm vi của tài liệu giả lập.\n1. Đây là mẫu kiểm thử, không có giá trị pháp lý.\n"}
+{"id": "train-002", "document_id": "doc-train-002", "family_id": "family-train-002", "category": "structure", "text": "MẪU GIẢ LẬP: khoản 2 Điều 15, điểm a và điểm b. Không suy ra quy định thực tế."}
+{"id": "train-003", "document_id": "doc-train-003", "family_id": "family-train-003", "category": "legal_number", "text": "Ký hiệu giả lập: 9001/2099/NĐ-CP; 9002/2099/TT-XYZ; 9003/QĐ-MẪU."}
+{"id": "train-004", "document_id": "doc-train-004", "family_id": "family-train-004", "category": "date", "text": "Ngày ví dụ: 01/02/2099; thời điểm giả lập: ngày 03 tháng 04 năm 2099."}
+{"id": "train-005", "document_id": "doc-train-005", "family_id": "family-train-005", "category": "numbers", "text": "Bảng thử số: 1.200.000 đồng; 1.200,50; 12,5%; -2925; +0,01."}
+{"id": "train-006", "document_id": "doc-train-006", "family_id": "family-train-006", "category": "relations", "text": "Từ vựng thử: sửa đổi, bổ sung, bãi bỏ, thay thế, dẫn chiếu, ngoại lệ."}
+{"id": "train-007", "document_id": "doc-train-007", "family_id": "family-train-007", "category": "relations", "text": "Từ vựng thử: ngày ban hành, ngày hiệu lực, điều khoản chuyển tiếp, phụ lục."}
+{"id": "train-008", "document_id": "doc-train-008", "family_id": "family-train-008", "category": "reasoning", "text": "Nhãn thử: chưa đủ căn cứ; cần đọc tài liệu gốc; không được tự đoán nội dung."}
+{"id": "train-009", "document_id": "doc-train-009", "family_id": "family-train-009", "category": "whitespace", "text": "Đầu trang\n\n  Đoạn có hai dấu cách.\tCột hai.\nCuối trang\n"}
+{"id": "train-010", "document_id": "doc-train-010", "family_id": "family-train-010", "category": "table", "text": "| STT | Mục thử | ĐVT |\n| 1 | Hạng mục A | m² |\n| 2 | Hạng mục B | m³ |"}
+{"id": "train-011", "document_id": "doc-train-011", "family_id": "family-train-011", "category": "unicode", "text": "Tiếng Việt: a à á ả ã ạ; ă ằ ắ ẳ ẵ ặ; â ầ ấ ẩ ẫ ậ; đ Đ."}
+{"id": "train-012", "document_id": "doc-train-012", "family_id": "family-train-012", "category": "unicode", "text": "Tiếng Việt: e è é ẻ ẽ ẹ; ê ề ế ể ễ ệ; i ì í ỉ ĩ ị."}
+{"id": "train-013", "document_id": "doc-train-013", "family_id": "family-train-013", "category": "unicode", "text": "Tiếng Việt: o ò ó ỏ õ ọ; ô ồ ố ổ ỗ ộ; ơ ờ ớ ở ỡ ợ."}
+{"id": "train-014", "document_id": "doc-train-014", "family_id": "family-train-014", "category": "unicode", "text": "Tiếng Việt: u ù ú ủ ũ ụ; ư ừ ứ ử ữ ự; y ỳ ý ỷ ỹ ỵ."}
+{"id": "train-015", "document_id": "doc-train-015", "family_id": "family-train-015", "category": "unicode", "text": "CHỮ HOA: ĐIỀU, KHOẢN, ĐIỂM, NGHỊ ĐỊNH, THÔNG TƯ, PHỤ LỤC."}
+{"id": "train-016", "document_id": "doc-train-016", "family_id": "family-train-016", "category": "symbols", "text": "Ký hiệu thử: ≤ ≥ ≠ ± × ÷ § °; các dấu: “ ” ‘ ’ … – —."}
+{"id": "train-017", "document_id": "doc-train-017", "family_id": "family-train-017", "category": "english", "text": "Synthetic English support text. Read the document; cite the page and paragraph."}
+{"id": "train-018", "document_id": "doc-train-018", "family_id": "family-train-018", "category": "json", "text": "{\"page\": 12, \"bbox\": [1, 20, 30, 40], \"answer\": \"mẫu\"}"}
+{"id": "train-019", "document_id": "doc-train-019", "family_id": "family-train-019", "category": "metadata", "text": "Mã hồ sơ thử: H2-A-001. Trang 7/20. Phiên bản mẫu thứ hai."}
+{"id": "train-020", "document_id": "doc-train-020", "family_id": "family-train-020", "category": "structure", "text": "Phụ lục thử A\nMẫu biểu số 08.\na) Dòng một.\nb) Dòng hai."}
+{"id": "train-021", "document_id": "doc-train-021", "family_id": "family-train-021", "category": "relations", "text": "Trong ví dụ giả lập, văn bản A được dẫn chiếu trong văn bản B. Chỉ kiểm tra chữ."}
+{"id": "train-022", "document_id": "doc-train-022", "family_id": "family-train-022", "category": "date", "text": "Chuỗi ngày để thử dấu phân cách: 2099-12-31, 31.12.2099, 31/12/2099."}
+{"id": "train-023", "document_id": "doc-train-023", "family_id": "family-train-023", "category": "whitespace", "text": "  Giữ khoảng trắng đầu và cuối  \r\nGiữ CRLF và tab\t.\r\n"}
+{"id": "train-024", "document_id": "doc-train-024", "family_id": "family-train-024", "category": "unicode", "text": "Mẫu Unicode tổ hợp: tiếng Việt có dấu cần được giữ nguyên."}

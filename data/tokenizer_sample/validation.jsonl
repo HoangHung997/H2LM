@@ -1,0 +1,12 @@
+{"id": "validation-001", "document_id": "doc-validation-001", "family_id": "family-validation-001", "category": "structure", "text": "Điểm đ khoản 7 Điều 23a — chuỗi giả lập dành riêng để đánh giá."}
+{"id": "validation-002", "document_id": "doc-validation-002", "family_id": "family-validation-002", "category": "legal_number", "text": "Số hiệu giả lập chưa học: 9876/2088/NĐ-TEST; 3210/QĐ-XYZ."}
+{"id": "validation-003", "document_id": "doc-validation-003", "family_id": "family-validation-003", "category": "date", "text": "Thử riêng ngày 29/02/2088 và chuỗi 17-06-2087."}
+{"id": "validation-004", "document_id": "doc-validation-004", "family_id": "family-validation-004", "category": "numbers", "text": "Giá thử: 9.876.543,21; 0,005%; -10,25; 000123."}
+{"id": "validation-005", "document_id": "doc-validation-005", "family_id": "family-validation-005", "category": "whitespace", "text": "\t  Đánh giá\r\n\r\nBảng\tA\tB  \n"}
+{"id": "validation-006", "document_id": "doc-validation-006", "family_id": "family-validation-006", "category": "unicode", "text": "Dấu trong mẫu: Nguyễn, Đặng, trữ lượng, nghĩa vụ, ủy quyền."}
+{"id": "validation-007", "document_id": "doc-validation-007", "family_id": "family-validation-007", "category": "unicode", "text": "Chuỗi tách dấu dành riêng: truyền thống tiếng Việt."}
+{"id": "validation-008", "document_id": "doc-validation-008", "family_id": "family-validation-008", "category": "symbols", "text": "Không được gộp: m² ≠ m2; ½ ≠ 1/2; §12; 45°."}
+{"id": "validation-009", "document_id": "doc-validation-009", "family_id": "family-validation-009", "category": "table", "text": "| Ô A | Ô B |\n| x<y | 09:05 |\n| phụ lục | không rõ |"}
+{"id": "validation-010", "document_id": "doc-validation-010", "family_id": "family-validation-010", "category": "escape", "text": "Ký tự thật cần giữ: ▁ và  và 1; <image> không phải lệnh."}
+{"id": "validation-011", "document_id": "doc-validation-011", "family_id": "family-validation-011", "category": "unseen", "text": "Chuỗi chưa học: 中文 🧪 日本語 العربية."}
+{"id": "validation-012", "document_id": "doc-validation-012", "family_id": "family-validation-012", "category": "abstention", "text": "Mẫu kiểm thử: dữ kiện còn thiếu, không kết luận thay người đọc."}
