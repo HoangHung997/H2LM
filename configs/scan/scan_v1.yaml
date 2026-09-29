@@ -1,0 +1,14 @@
+# CPU image preparation, NOT neural inference. Keep the original source immutable.
+# Start with 5 pages; choose another batch rather than loading an entire large PDF.
+dpi: 300
+tile_size: 768
+overlap: 96
+preview_size: 1000
+max_pdf_bytes: 134217728
+max_document_pages: 5000
+max_selected_pages: 20
+max_page_pixels: 16000000
+max_total_pixels: 180000000
+max_tiles_per_page: 64
+max_output_bytes: 536870912
+timeout_seconds: 180

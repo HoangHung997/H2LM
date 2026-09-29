@@ -13,6 +13,7 @@ dependencies = ["PyYAML>=6.0,<7"]
 model = ["torch>=2.3"]
 tokenizer = ["sentencepiece==0.2.1"]
 public_seed = ["sentencepiece==0.2.1", "pypdf==5.9.0"]
+scan = ["pypdfium2==5.8.0", "Pillow==12.3.0"]
 dev = ["pytest>=8.0,<10", "ruff==0.16.9"]
 
 [project.scripts]

@@ -21,10 +21,10 @@ Trạng thái/điểm tiếp tục: [docs/06_IMPLEMENTATION_TASKS.md](docs/06_IM
 
 ## Tải và chạy phần mới
 
-Trong khi PR chưa merge, dùng nhánh **h2lm-m1b2-public-seed**, không tải main rồi tìm code M1.
+Trong khi PR chưa merge, dùng nhánh **h2lm-scan-input-v1**, không tải main rồi tìm code M1.
 
 ```powershell
-git clone --branch h2lm-m1b2-public-seed https://github.com/HoangHung997/H2LM.git
+git clone --branch h2lm-scan-input-v1 https://github.com/HoangHung997/H2LM.git
 cd H2LM
 ```
 
@@ -86,3 +86,18 @@ trên CPU. Lưu PDF nguồn, text từng trang, kiểm trùng, freeze và holdou
 Đây là **seed**, chưa đạt corpus sản phẩm; text-layer chưa được kiểm chứng trực quan không được
 gắn nhãn người duyệt. Xem [phạm vi và cách chạy](docs/08_PUBLIC_LEGAL_SEED.md).
 Kết quả thực chạy phải đối chiếu Actions/PR đúng SHA. Không có checkpoint neural hiểu PDF.
+
+## Ưu tiên PDF scan lại — M1-SCAN-A
+
+Người dùng thường dùng tài liệu in rồi scan lại. Đây là input chính, không phải ca phụ.
+Mở `RUN_SCAN_PREPARE.cmd` (Python 3.11 x64) và chọn PDF. Chỉ chuẩn bị 5 trang đầu mặc định:
+ảnh trang, ảnh tổng quan, vùng ảnh chồng lấn giữ nguyên pixel, tọa độ về PDF và bản sao gốc.
+Xem `review.html` trong output local. Không upload, không OCR ngoài, chưa chạy neural H2LM.
+
+- Cấu hình: `configs/scan/scan_v1.yaml`; code: `src/h2lm/scans/`.
+- Hướng dẫn và yêu cầu scan: [docs/09_SCAN_FIRST.md](docs/09_SCAN_FIRST.md).
+- `expected_text: null`, không coi OCR ẩn/ảnh render là ground truth, không tự xóa dấu/mép/trang mờ.
+- Corpus thật và vision training vẫn chưa nghiệm thu. Acquisition ở PR #4 đã lỗi SSL trên run
+  36562685281; không tắt xác minh TLS hoặc thay dữ liệu giả để làm xanh.
+
+Code source hiện trên nhánh scan kế thừa PR #4, không chép đè bản ZIP M1-B2 cũ vào nhánh này.
