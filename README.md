@@ -1,68 +1,67 @@
 # H2LM
 
-**H2LM V1** là dự án xây dựng một mô hình AI multimodal **Vision-First / Document-First** do chính dự án huấn luyện trọng số từ đầu, tập trung trước hết vào **tài liệu tiếng Việt**, đặc biệt là **văn bản pháp lý**: luật, nghị định, thông tư, quyết định, phụ lục, văn bản sửa đổi/bổ sung/thay thế và hồ sơ nhiều trang.
+**H2LM V1** xây dựng mô hình multimodal **Vision-First / Document-First**, ưu tiên tài liệu
+pháp lý tiếng Việt: văn bản nhiều trang, bảng, điều/khoản/điểm, dẫn chiếu và trả lời có căn cứ.
+Đích inference tham chiếu: GTX 1070 8 GB VRAM. Đây là mục tiêu cần đo, chưa phải cấu hình đã nghiệm thu.
 
-## Mục tiêu V1
+## Nguyên tắc model — phương án B
 
-H2LM không được thiết kế như một OCR rồi chuyển kết quả sang một AI khác. Mục tiêu là một mô hình duy nhất có khả năng:
+Neural weights của H2LM được khởi tạo ngẫu nhiên. Teacher có thể tạo/kiểm tra dữ liệu,
+nhưng không nhập weights teacher và không mặc định output teacher là ground truth.
+Mỗi nguồn cần provenance, quyền sử dụng và kiểm chứng. Không tự gọi API có phí hay đưa hồ sơ
+riêng tư ra ngoài. Không hứa phán đoán pháp lý đúng khi chưa đủ bằng chứng.
 
-- nhìn trang PDF/ảnh scan ở độ phân giải cao;
-- đọc tiếng Việt có dấu, chữ nhỏ, bảng, biểu mẫu và bố cục phức tạp;
-- hiểu cấu trúc Chương → Điều → Khoản → Điểm;
-- nhận biết dẫn chiếu, sửa đổi, bổ sung, bãi bỏ, thay thế, hiệu lực và điều khoản chuyển tiếp;
-- suy luận trên nhiều trang/nhiều văn bản;
-- trả lời có căn cứ và vị trí nguồn, đồng thời biết từ chối kết luận khi thiếu dữ kiện;
-- chạy local ở bản quantized trên máy đích tham chiếu **NVIDIA GTX 1070 8 GB VRAM**.
+## Trạng thái hiện tại
 
-## Nguyên tắc sở hữu model
+M0 có reference model PyTorch và CPU smoke tests. M1-A có **công cụ tokenizer train được trên CPU**,
+fixture tiếng Việt và kiểm thử. **Chưa có checkpoint H2LM biết đọc PDF hoặc suy luận pháp luật.**
+M1-B corpus thật/benchmark đại diện chưa làm; vocabulary sản phẩm 2–3B chưa khóa.
+Trạng thái/điểm tiếp tục: [docs/06_IMPLEMENTATION_TASKS.md](docs/06_IMPLEMENTATION_TASKS.md).
 
-H2LM V1 chọn phương án **B**:
+## Tải và chạy phần mới
 
-1. Trọng số H2LM được khởi tạo ngẫu nhiên và huấn luyện bởi pipeline của dự án.
-2. Có thể dùng các model mạnh làm **teacher** để tạo, gợi ý hoặc kiểm tra dữ liệu huấn luyện.
-3. Teacher model không được nhúng trọng số vào H2LM.
-4. Dữ liệu do teacher sinh phải có provenance, bộ lọc và bước kiểm chứng; không coi output của teacher là ground truth mặc định.
+Trong khi PR chưa merge, dùng nhánh **h2lm-m1-tokenizer**, không tải main rồi tìm code M1.
 
-## Thiết kế để người dùng tự sửa được
+```powershell
+git clone --branch h2lm-m1-tokenizer https://github.com/HoangHung997/H2LM.git
+cd H2LM
+```
 
-Repository ưu tiên **Python + PyTorch + YAML/JSON + Markdown**. Những thứ thường xuyên cần chỉnh (kích thước model, tokenizer, độ phân giải, batch size, dataset mix, loss weight, teacher provider, benchmark threshold...) phải đặt trong file cấu hình, không hard-code rải rác.
+Trên Windows mở **RUN_TOKENIZER_DEMO.cmd**. Script tạo môi trường riêng, cài dependency nhỏ
+của tokenizer rồi train/evaluate fixture; không tải neural weights hoặc CUDA.
+Python 3.11 được dùng trong CI. Hoặc chạy thủ công:
 
-Mục tiêu là có thể mở repository bằng VS Code/PyCharm, đọc tài liệu và sửa từng phần mà không cần công cụ nội bộ bí mật.
+```powershell
+python -m venv .venv-tokenizer
+.\.venv-tokenizer\Scripts\python.exe -m pip install -e ".[tokenizer,dev]"
+.\.venv-tokenizer\Scripts\python.exe scripts/tokenizer_demo.py
+.\.venv-tokenizer\Scripts\python.exe -m pytest -q tests/test_m1_tokenizer.py
+```
 
-## Bắt đầu nhanh
+Output ở `artifacts/tokenizer/`: tokenizer, metadata và báo cáo khôi phục text.
+Fixture tổng hợp gồm **24 train / 12 validation / 12 test**, không chứa căn cứ pháp lý thật.
+Một tokenizer chạy được chưa có nghĩa language/vision model đã được huấn luyện.
 
-Windows PowerShell:
+## Tự mở và sửa
 
-    git clone https://github.com/HoangHung997/H2LM.git
-    cd H2LM
-    git switch h2lm-v1-bootstrap
-    python -m venv .venv
-    .\.venv\Scripts\Activate.ps1
-    pip install -e ".[dev]"
-    pytest -q
-    python scripts/smoke_train.py --device cuda
+| Muốn sửa | File/thư mục |
+|---|---|
+| Vocabulary size, BPE/Unigram, giới hạn dữ liệu | `configs/tokenizer/h2lm_tokenizer_dev.yaml` |
+| Nguồn corpus/split/checksum | `data/tokenizer_sample/manifest.json` hoặc manifest riêng |
+| Code tokenizer | `src/h2lm/tokenization/` |
+| Kích thước và kiến trúc neural model | `configs/model/`, `src/h2lm/modeling/h2lm.py` |
+| Tiêu chí kiểm thử | `tests/` |
 
-Smoke train chỉ xác nhận model random-weight có thể forward/backward. Nó **không phải** checkpoint đã được huấn luyện.
+Source Python, cấu hình YAML/JSON và tài liệu Markdown đều mở được bằng VS Code/PyCharm.
+Tokenizer tools không import PyTorch; phần model cài môi trường riêng theo editing guide.
+Không tự đổi tokenizer đã gắn với model checkpoint vì IDs phải khớp embedding.
 
 ## Tài liệu nguồn
 
-- docs/00_PRODUCT_SPEC.md — H2LM V1 phải làm gì.
-- docs/01_ARCHITECTURE.md — kiến trúc và các phần có thể thay.
-- docs/02_DATA_AND_TEACHERS.md — phương án B và provenance dữ liệu.
-- docs/03_ROADMAP.md — các milestone từ bootstrap tới local inference.
-- docs/04_EDITING_GUIDE.md — cách tự mở, sửa và thử model.
+- [Product spec](docs/00_PRODUCT_SPEC.md), [Architecture](docs/01_ARCHITECTURE.md).
+- [Data & teachers](docs/02_DATA_AND_TEACHERS.md), [Roadmap](docs/03_ROADMAP.md).
+- [Cách tự sửa](docs/04_EDITING_GUIDE.md), [Tokenizer M1-A](docs/05_TOKENIZER.md).
+- [Task status / SESSION HANDOFF](docs/06_IMPLEMENTATION_TASKS.md).
 
-## Trạng thái
-
-Repository đang ở giai đoạn **V1 bootstrap / architecture lock**. Chưa có checkpoint H2LM V1 hoàn chỉnh. Mọi kết quả benchmark phải gắn với commit SHA + config + dataset manifest để có thể tái lập.
-
-## Quy ước chính
-
-- docs/ — đặc tả và quyết định kiến trúc.
-- configs/ — cấu hình model/train/data; ưu tiên chỉnh ở đây.
-- src/h2lm/ — mã nguồn model và pipeline.
-- tests/ — smoke/unit tests.
-- data/ — chỉ chứa manifest/mẫu nhỏ; không commit dataset lớn hay tài liệu có hạn chế bản quyền.
-- artifacts/ và checkpoints — không commit trực tiếp vào Git.
-
-Chi tiết triển khai sẽ được bổ sung theo từng milestone H2LM V1.
+Không commit dataset lớn, hồ sơ riêng tư hoặc checkpoints vào Git.
+Kết quả phải có code SHA/config/dataset hash; không dùng demo nhỏ để tuyên bố mạnh hơn model khác.

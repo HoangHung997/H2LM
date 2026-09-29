@@ -5,58 +5,61 @@ Mục tiêu của repository là không khóa người dùng vào một công c�
 ## 1. Mở project
 
 Có thể clone repository và mở trực tiếp bằng VS Code hoặc PyCharm.
+Nhánh triển khai hiện tại là `h2lm-m1-tokenizer`; main chưa tự động nhận PR chưa merge.
 
 Windows PowerShell:
 
-    git clone https://github.com/HoangHung997/H2LM.git
+    git clone --branch h2lm-m1-tokenizer https://github.com/HoangHung997/H2LM.git
     cd H2LM
     python -m venv .venv
     .\.venv\Scripts\Activate.ps1
-    pip install -e ".[dev]"
+    pip install -e ".[tokenizer,dev]"
+
+Chỉ làm tokenizer thì không cần PyTorch/GPU. Hướng dẫn đầy đủ: `docs/05_TOKENIZER.md`.
+Cách đơn giản trên Windows là mở `RUN_TOKENIZER_DEMO.cmd`.
 
 ## 2. Những nơi nên sửa trước
 
+### Muốn đổi tokenizer
+
+Sửa `configs/tokenizer/h2lm_tokenizer_dev.yaml`. Dữ liệu dùng manifest JSONL có checksum,
+nguồn và split. Không sửa tokenizer đã gắn với checkpoint mà bỏ qua embedding tương ứng.
+
 ### Muốn đổi kích thước model
 
-Sửa YAML trong:
-
-    configs/model/
-
+Sửa YAML trong `configs/model/`.
 Không cần sửa Python nếu chỉ đổi số layer, hidden size, head, image size hoặc patch size.
 
 ### Muốn đổi kiến trúc
 
-Sửa:
-
-    src/h2lm/modeling/h2lm.py
-
-Reference implementation cố tình giữ trong một file nhỏ ở bootstrap để dễ đọc. Khi kiến trúc ổn định sẽ tách encoder/fusion/decoder thành module riêng.
+Sửa `src/h2lm/modeling/h2lm.py`.
+Reference implementation cố tình nhỏ để dễ đọc. Encoder/fusion/decoder sẽ được tách khi cần.
 
 ### Muốn đổi chiến lược dữ liệu
 
-Đọc:
-
-    docs/02_DATA_AND_TEACHERS.md
-
-Pipeline dataset sẽ được bổ sung ở milestone tiếp theo.
+Đọc `docs/02_DATA_AND_TEACHERS.md` và `docs/05_TOKENIZER.md`.
+M1-A mới có corpus contract cho tokenizer, chưa có full PDF/teacher training pipeline.
 
 ## 3. Chạy thử model chưa train
 
-    python scripts/smoke_train.py --device cuda
+Phần model cần cài PyTorch phù hợp môi trường, độc lập với tokenizer.
+Trên CPU, có thể cài bản PyTorch đã dùng trong CI:
 
-Script tạo input ngẫu nhiên, forward, backward và optimizer step. Đây không phải huấn luyện thật; mục tiêu là xác nhận code model hoạt động trên máy.
+    python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+    python -m pip install -e ".[tokenizer,dev]"
+    python -m pytest -q
+    python scripts/smoke_train.py --device cpu
+
+Chỉ dùng `--device cuda` khi đã kiểm tra build PyTorch/driver tương thích GPU thực tế.
+Không coi một bản wheel CUDA mới nhất là đã được xác nhận chạy trên GTX 1070.
+Script smoke dùng dữ liệu ngẫu nhiên, không tạo checkpoint H2LM thông minh.
 
 ## 4. Quy tắc để dễ sửa lâu dài
 
-- Hyperparameter nằm trong YAML.
-- Không hard-code API key.
-- Không commit weights/dataset lớn.
-- Mọi format dữ liệu phải có schema.
-- Mọi benchmark phải lưu config và commit SHA.
-- Kiến trúc mới phải có test nhỏ trước khi train tốn tiền.
+- Hyperparameter nằm trong YAML; đọc error thay vì bỏ qua config sai.
+- Không hard-code API key hoặc commit hồ sơ riêng tư/weights lớn.
+- Mọi format có version; benchmark có config/hash/source revision.
+- Tạo branch riêng trước khi sửa; chạy tests nhỏ trước khi train tốn tiền.
 
-## 5. Khi tự sửa lỗi
-
-Tạo branch riêng rồi commit. Nếu sửa YAML mà model không load được, test config sẽ phát hiện một số lỗi cấu trúc cơ bản.
-
-Không có source generator kín hoặc binary bắt buộc để chỉnh H2LM; mã model và pipeline phải đọc được trong repository.
+Không có source generator kín hoặc binary bắt buộc để chỉnh mã H2LM.
+Artifact tokenizer là đầu ra được tạo từ source/config/corpus có trong hướng dẫn.

@@ -1,0 +1,12 @@
+{"id": "test-001", "document_id": "doc-test-001", "family_id": "family-test-001", "category": "structure", "text": "Mục V / Điều 99 / Khoản 12 / Điểm c: chỉ là dòng kiểm thử cuối."}
+{"id": "test-002", "document_id": "doc-test-002", "family_id": "family-test-002", "category": "legal_number", "text": "TEST: 7654/2077/TT-DEMO và 456/QĐ-ABC là ký hiệu giả lập."}
+{"id": "test-003", "document_id": "doc-test-003", "family_id": "family-test-003", "category": "date", "text": "Ngày cuối để thử: 30/11/2077 lúc 23:59:58."}
+{"id": "test-004", "document_id": "doc-test-004", "family_id": "family-test-004", "category": "numbers", "text": "001.020,003; -0,0001; 99,99%; 10⁻³; 1e-9."}
+{"id": "test-005", "document_id": "doc-test-005", "family_id": "family-test-005", "category": "whitespace", "text": "\n\n  Một\tHai\fTrang kế\u000bCột mới\n "}
+{"id": "test-006", "document_id": "doc-test-006", "family_id": "family-test-006", "category": "unicode", "text": "Dòng cuối: thẩm quyền, hiệu lực, bãi bỏ, điểm đ, phụ lục bổ sung."}
+{"id": "test-007", "document_id": "doc-test-007", "family_id": "family-test-007", "category": "unicode", "text": "Một mẫu tách dấu khác: quyết định và nghị định."}
+{"id": "test-008", "document_id": "doc-test-008", "family_id": "family-test-008", "category": "symbols", "text": "Ⅳ không giống IV; ㎏ khác kg về ký tự; ≤ 50 ≥ 20."}
+{"id": "test-009", "document_id": "doc-test-009", "family_id": "family-test-009", "category": "table", "text": "A\tB\tC\n11\t22\t33\n| Dòng cuối | 123,456 |"}
+{"id": "test-010", "document_id": "doc-test-010", "family_id": "family-test-010", "category": "escape", "text": "▁▁01 <pad> </s> <bbox> — ký tự văn bản gốc."}
+{"id": "test-011", "document_id": "doc-test-011", "family_id": "family-test-011", "category": "unseen", "text": "Nguồn chữ lạ: 한국어 🧭 Ελληνικά."}
+{"id": "test-012", "document_id": "doc-test-012", "family_id": "family-test-012", "category": "abstention", "text": "Đầu ra giả lập: cần kiểm tra nguồn; chưa có đủ trang để trả lời."}

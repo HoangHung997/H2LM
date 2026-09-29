@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "h2-synthetic-train",
+      "path": "train.jsonl",
+      "split": "train",
+      "sha256": "0fc17a8b706918d4809eb8fe21556745b8f77fd52963a0e24f7e20ad99bb7887",
+      "source_uri": "synthetic://h2lm/m1/train",
+      "rights_note": "Project-created engineering fixtures. Not real legal texts, not legal authority. No external corpus or teacher API was used.",
+      "approved": true,
+      "origin": "synthetic_fixture"
+    },
+    {
+      "id": "h2-synthetic-validation",
+      "path": "validation.jsonl",
+      "split": "validation",
+      "sha256": "d52baa34f9f507e05b45da74c50b7c7c61389b0e7dbc9e0ea443109b70236cce",
+      "source_uri": "synthetic://h2lm/m1/validation",
+      "rights_note": "Project-created engineering fixtures. Not real legal texts, not legal authority. No external corpus or teacher API was used.",
+      "approved": true,
+      "origin": "synthetic_fixture"
+    },
+    {
+      "id": "h2-synthetic-test",
+      "path": "test.jsonl",
+      "split": "test",
+      "sha256": "9c45f3923d8373d0ee877fc9394bd21928fe028c111936a5ee0cac26b78ab972",
+      "source_uri": "synthetic://h2lm/m1/test",
+      "rights_note": "Project-created engineering fixtures. Not real legal texts, not legal authority. No external corpus or teacher API was used.",
+      "approved": true,
+      "origin": "synthetic_fixture"
+    }
+  ]
+}

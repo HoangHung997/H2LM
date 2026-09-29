@@ -1,0 +1,8 @@
+# CPU-only engineering fixture; NOT the final language-model vocabulary.
+name: h2lm-tokenizer-dev-v1
+vocab_size: 1024
+model_type: bpe
+split_digits: true
+max_sentence_bytes: 4096
+max_corpus_bytes: 67108864
+max_records: 100000
