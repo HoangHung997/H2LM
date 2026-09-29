@@ -15,15 +15,16 @@ riêng tư ra ngoài. Không hứa phán đoán pháp lý đúng khi chưa đủ
 
 M0 có reference model PyTorch và CPU smoke tests. M1-A có **công cụ tokenizer train được trên CPU**,
 fixture tiếng Việt và kiểm thử. **Chưa có checkpoint H2LM biết đọc PDF hoặc suy luận pháp luật.**
-M1-B corpus thật/benchmark đại diện chưa làm; vocabulary sản phẩm 2–3B chưa khóa.
+M1-B1 có importer corpus đã duyệt và bộ so sánh tokenizer có resume.
+M1-B2 corpus thật/benchmark đại diện còn phải làm; vocabulary sản phẩm 2–3B chưa khóa.
 Trạng thái/điểm tiếp tục: [docs/06_IMPLEMENTATION_TASKS.md](docs/06_IMPLEMENTATION_TASKS.md).
 
 ## Tải và chạy phần mới
 
-Trong khi PR chưa merge, dùng nhánh **h2lm-m1-tokenizer**, không tải main rồi tìm code M1.
+Trong khi PR chưa merge, dùng nhánh **h2lm-m1b-corpus**, không tải main rồi tìm code M1.
 
 ```powershell
-git clone --branch h2lm-m1-tokenizer https://github.com/HoangHung997/H2LM.git
+git clone --branch h2lm-m1b-corpus https://github.com/HoangHung997/H2LM.git
 cd H2LM
 ```
 
@@ -65,3 +66,15 @@ Không tự đổi tokenizer đã gắn với model checkpoint vì IDs phải kh
 
 Không commit dataset lớn, hồ sơ riêng tư hoặc checkpoints vào Git.
 Kết quả phải có code SHA/config/dataset hash; không dùng demo nhỏ để tuyên bố mạnh hơn model khác.
+
+## M1-B1 mới: chuẩn bị corpus và so sánh tokenizer
+
+Windows mở `RUN_CORPUS_BENCHMARK.cmd`. Demo import TXT **tổng hợp**, tách test khỏi đầu vào
+so sánh rồi huấn luyện bốn ứng viên BPE/Unigram trên CPU. Không phải model H2LM đã hiểu PDF.
+Có timeout từng ứng viên, `--resume` giữa ứng viên, kiểm tra hash và không tự ghi đè artifact.
+
+Để dùng tài liệu thật, đọc [hướng dẫn corpus/benchmark](docs/07_CORPUS_AND_BENCHMARK.md),
+chuẩn bị registry có người duyệt bên ngoài Git. Mẫu chưa được duyệt nằm ở
+`data/corpus_registry/registry.example.json`. Không tự gắn dữ liệu chưa kiểm chứng nhãn đã duyệt.
+Cấu hình so sánh: `configs/tokenizer/h2lm_comparison_pilot.yaml`.
+Chưa gọi teacher API, thuê GPU, kết nối PC runner hoặc huấn luyện neural model sản phẩm.

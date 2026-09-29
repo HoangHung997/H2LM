@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "name": "replace-with-reviewed-local-corpus",
+  "chunk_bytes": 2048,
+  "documents": [
+    {
+      "id": "train-document-01",
+      "family_id": "train-family-01",
+      "path": "texts/train.txt",
+      "sha256": "REPLACE_WITH_SHA256_OF_ORIGINAL_UTF8_BYTES",
+      "split": "train",
+      "category": "legal_text",
+      "origin": "human_verified",
+      "source_uri": "REPLACE_WITH_ORIGINAL_SOURCE",
+      "rights_note": "REPLACE_WITH_REVIEWED_USAGE_TERMS",
+      "approved": false,
+      "sensitivity": "private",
+      "reviewed_by": "",
+      "reviewed_at": ""
+    },
+    {
+      "id": "validation-document-01",
+      "family_id": "validation-family-01",
+      "path": "texts/validation.txt",
+      "sha256": "REPLACE_WITH_SHA256_OF_ORIGINAL_UTF8_BYTES",
+      "split": "validation",
+      "category": "legal_text",
+      "origin": "human_verified",
+      "source_uri": "REPLACE_WITH_ORIGINAL_SOURCE",
+      "rights_note": "REPLACE_WITH_REVIEWED_USAGE_TERMS",
+      "approved": false,
+      "sensitivity": "private",
+      "reviewed_by": "",
+      "reviewed_at": ""
+    },
+    {
+      "id": "test-document-01",
+      "family_id": "test-family-01",
+      "path": "texts/test.txt",
+      "sha256": "REPLACE_WITH_SHA256_OF_ORIGINAL_UTF8_BYTES",
+      "split": "test",
+      "category": "legal_text",
+      "origin": "human_verified",
+      "source_uri": "REPLACE_WITH_ORIGINAL_SOURCE",
+      "rights_note": "REPLACE_WITH_REVIEWED_USAGE_TERMS",
+      "approved": false,
+      "sensitivity": "private",
+      "reviewed_by": "",
+      "reviewed_at": ""
+    }
+  ]
+}
