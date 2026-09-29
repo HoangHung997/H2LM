@@ -1,0 +1,27 @@
+name: h2lm-v1-dev
+status: runnable-reference
+
+model:
+  vocab_size: 8192
+  max_text_tokens: 512
+  d_model: 256
+  num_layers: 6
+  num_heads: 8
+  mlp_ratio: 4.0
+  dropout: 0.0
+
+vision:
+  image_size: 512
+  patch_size: 32
+  in_channels: 3
+  d_vision: 256
+  num_layers: 4
+  num_heads: 8
+  dropout: 0.0
+
+fusion:
+  type: prefix_projector
+
+runtime:
+  dtype: float32
+  target_device: cuda
