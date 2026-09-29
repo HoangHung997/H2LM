@@ -35,9 +35,11 @@ jobs:
       - name: Compile
         run: python -m compileall -q src tests scripts
       - name: Tokenizer contract tests
-        run: python -m pytest -q tests/test_m1_tokenizer.py --junitxml=artifacts/tokenizer-tests.xml
+        run: python -m pytest -q tests/test_m1_tokenizer.py tests/test_m1b_preparation.py tests/test_m1b_benchmark.py --junitxml=artifacts/tokenizer-tests.xml
       - name: Train and evaluate synthetic fixture
         run: python scripts/tokenizer_demo.py --output artifacts/tokenizer-ci
+      - name: Prepare corpus and compare tokenizer candidates (synthetic only)
+        run: python scripts/corpus_benchmark_demo.py --output artifacts/corpus-benchmark-ci
       - name: Save fixture artifacts and reports
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,0 +1,25 @@
+# Initial engineering minimums, NOT evidence of statistically representative legal coverage.
+# Refuses synthetic fixtures. Only use on reviewed, non-private-or-explicitly-approved local data.
+schema_version: 1
+mode: pilot
+timeout_seconds: 300
+minimums:
+  train_records: 1000
+  validation_records: 200
+  train_families: 30
+  validation_families: 10
+  train_characters: 1000000
+  validation_characters: 200000
+candidates:
+  - name: bpe-8192
+    model_type: bpe
+    vocab_size: 8192
+  - name: bpe-16384
+    model_type: bpe
+    vocab_size: 16384
+  - name: unigram-8192
+    model_type: unigram
+    vocab_size: 8192
+  - name: unigram-16384
+    model_type: unigram
+    vocab_size: 16384

@@ -1,0 +1,22 @@
+# Engineering-only comparison; no final vocabulary decision from this tiny fixture.
+schema_version: 1
+mode: fixture
+timeout_seconds: 120
+minimums:
+  train_records: 24
+  validation_records: 12
+  train_families: 3
+  validation_families: 3
+candidates:
+  - name: bpe-512
+    model_type: bpe
+    vocab_size: 512
+  - name: bpe-1024
+    model_type: bpe
+    vocab_size: 1024
+  - name: unigram-512
+    model_type: unigram
+    vocab_size: 512
+  - name: unigram-1024
+    model_type: unigram
+    vocab_size: 1024
