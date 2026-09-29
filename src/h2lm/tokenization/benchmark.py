@@ -27,8 +27,8 @@ def load_plan(path: str | Path) -> dict[str, Any]:
     allowed = {"schema_version", "mode", "timeout_seconds", "candidates", "minimums"}
     if set(plan) - allowed or type(plan.get("schema_version")) is not int or plan["schema_version"] != 1:
         raise ValueError("Unknown comparison config key/schema")
-    if plan.get("mode") not in {"fixture", "pilot"}:
-        raise ValueError("Comparison mode must be fixture or pilot")
+    if plan.get("mode") not in {"fixture", "pilot", "official_seed"}:
+        raise ValueError("Comparison mode must be fixture, pilot or official_seed")
     seconds = plan.get("timeout_seconds", 120)
     if type(seconds) is not int or not 1 <= seconds <= 900:
         raise ValueError("Each candidate budget must be 1..900 seconds")
@@ -87,6 +87,11 @@ def corpus_gate(corpus: Corpus, plan: dict[str, Any]) -> dict[str, Any]:
     if plan["mode"] == "pilot" and any(s["origin"] == "synthetic_fixture"
                                           for s in corpus.manifest["sources"]):
         failures.append("Pilot mode cannot use synthetic_fixture sources")
+    origins = {s["origin"] for s in corpus.manifest["sources"]}
+    if plan["mode"] == "pilot" and "official_pdf_text" in origins:
+        failures.append("Mechanical PDF extraction is seed-only, not a reviewed pilot corpus")
+    if plan["mode"] == "official_seed" and origins != {"official_pdf_text"}:
+        failures.append("Official seed must contain only official_pdf_text sources")
     return {"passed": not failures, "counts": counts, "failures": failures,
             "note": "Minimums are project gates, not a certificate of corpus representativeness."}
 

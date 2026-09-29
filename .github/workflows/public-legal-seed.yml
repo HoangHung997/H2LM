@@ -1,0 +1,52 @@
+name: H2LM public legal seed
+
+on:
+  pull_request:
+    branches: [h2lm-m1b-corpus]
+    paths:
+      - 'src/h2lm/tokenization/**'
+      - 'data/public_legal_seed/**'
+      - 'configs/tokenizer/h2lm_comparison_official_seed.yaml'
+      - '.github/workflows/public-legal-seed.yml'
+      - 'pyproject.toml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h2lm-public-seed-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-seed:
+    if: >-
+      github.repository == 'HoangHung997/H2LM' &&
+      github.event.pull_request.head.repo.full_name == 'HoangHung997/H2LM' &&
+      github.event.pull_request.head.ref == 'h2lm-m1b2-public-seed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install seed tools (CPU only)
+        run: python -m pip install -e '.[public_seed]'
+      - name: Record exact revision
+        run: git rev-parse HEAD
+      - name: Acquire reviewed public URLs and evaluate tokenizer seed
+        run: >-
+          python -m h2lm.tokenization.public_seed run
+          --catalog data/public_legal_seed/catalog.json
+          --config configs/tokenizer/h2lm_comparison_official_seed.yaml
+          --output artifacts/public-legal-seed --allow-network
+      - name: Preserve public snapshots and reports, including failed acquisitions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2lm-public-legal-seed-${{ github.event.pull_request.head.sha }}
+          path: artifacts/public-legal-seed/
+          retention-days: 14

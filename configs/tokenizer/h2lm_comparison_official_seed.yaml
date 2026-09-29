@@ -1,0 +1,25 @@
+# An explicitly SMALL seed; does NOT lower or replace h2lm_comparison_pilot.yaml gates.
+# Only official_pdf_text provenance allowed; no production vocabulary approval.
+schema_version: 1
+mode: official_seed
+timeout_seconds: 300
+minimums:
+  train_records: 50
+  validation_records: 30
+  train_families: 3
+  validation_families: 2
+  train_characters: 60000
+  validation_characters: 30000
+candidates:
+  - name: bpe-8192
+    model_type: bpe
+    vocab_size: 8192
+  - name: bpe-16384
+    model_type: bpe
+    vocab_size: 16384
+  - name: unigram-8192
+    model_type: unigram
+    vocab_size: 8192
+  - name: unigram-16384
+    model_type: unigram
+    vocab_size: 16384
