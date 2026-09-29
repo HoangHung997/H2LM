@@ -66,3 +66,18 @@ README → docs/00_PRODUCT_SPEC.md → docs/01_ARCHITECTURE.md → docs/02_DATA_
 → docs/03_ROADMAP.md → docs/06_IMPLEMENTATION_TASKS.md → tài liệu task hiện tại.
 Đích inference GTX 1070 8 GB vẫn là mục tiêu cần đo; số bytes weights không đại diện toàn
 bộ RAM/VRAM chạy model. Chưa có checkpoint sản phẩm đủ tin cậy để đưa ra kết luận pháp lý.
+
+## CQ-01 — Huấn luyện bám bằng chứng, giữ quy mô 1B
+
+Nhánh mới `h2lm-curriculum-quality-v1` kế thừa **h2lm-scale-1b tại 138ed6e**; model hiện tại
+có 1.001.571.584 tham số. Không trộn với gói local cũ 1.000.032.768 tham số khác kiến trúc.
+
+Đã triển khai factory sáu task có nhãn từ chương trình, cặp cùng câu hỏi/khác ảnh/khác đáp
+án, lịch đọc -> định vị/vai trò -> kết hợp hai trang, loss có trọng số căn cứ và kiểm che ảnh.
+Cấu hình pilot 48 bước không phải đã hoàn tất pretrain. Runner chấm sáu cặp validation định
+trước; bộ holdout synthetic không dùng để train/chọn model. Scan thật chưa được nghiệm thu.
+
+Xem [chiến lược và phần đã/chưa làm](docs/14_TRAINING_CURRICULUM.md), config
+`configs/training/curriculum_q1.yaml`, source `src/h2lm/curriculum/` và SESSION HANDOFF.
+Workflow mới chạy full 1B FP32 và giữ báo cáo + source, không tự thuê GPU/API và không upload
+trọng số nhiều GB vào Actions storage. Kết quả cuối phải đọc từ đúng SHA trong PR mới.
