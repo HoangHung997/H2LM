@@ -1,103 +1,61 @@
-# H2LM
+# H2LM V1
 
-**H2LM V1** xây dựng mô hình multimodal **Vision-First / Document-First**, ưu tiên tài liệu
-pháp lý tiếng Việt: văn bản nhiều trang, bảng, điều/khoản/điểm, dẫn chiếu và trả lời có căn cứ.
-Đích inference tham chiếu: GTX 1070 8 GB VRAM. Đây là mục tiêu cần đo, chưa phải cấu hình đã nghiệm thu.
+Model **vision-first / document-first**, ưu tiên PDF tiếng Việt được in rồi scan lại,
+tài liệu pháp lý nhiều trang, bảng, điều/khoản/điểm và đáp án có căn cứ. Đích chạy sản phẩm:
+GTX 1070 8 GB, **chưa nghiệm thu**. Không thiết kế thành OCR ngoài rồi nhờ agent khác hiểu hộ.
 
-## Nguyên tắc model — phương án B
+## Nguyên tắc — phương án B
 
-Neural weights của H2LM được khởi tạo ngẫu nhiên. Teacher có thể tạo/kiểm tra dữ liệu,
-nhưng không nhập weights teacher và không mặc định output teacher là ground truth.
-Mỗi nguồn cần provenance, quyền sử dụng và kiểm chứng. Không tự gọi API có phí hay đưa hồ sơ
-riêng tư ra ngoài. Không hứa phán đoán pháp lý đúng khi chưa đủ bằng chứng.
+Neural weights khởi tạo ngẫu nhiên; teacher có thể hỗ trợ tạo/kiểm tra dữ liệu, không nhập
+weights của teacher. Không mặc định output AI là ground truth. Không tự chi tiền thuê GPU,
+gọi API trả phí hoặc đưa hồ sơ chưa được cho phép ra ngoài. Mã Python, YAML/JSON và tài liệu
+Markdown đều mở được bằng VS Code/PyCharm; không có lõi binary bí mật để khóa người dùng.
 
-## Trạng thái hiện tại
+## Phần mới: đã chạy thử huấn luyện neural
 
-M0 có reference model PyTorch và CPU smoke tests. M1-A có **công cụ tokenizer train được trên CPU**,
-fixture tiếng Việt và kiểm thử. **Chưa có checkpoint H2LM biết đọc PDF hoặc suy luận pháp luật.**
-M1-B1 có importer corpus đã duyệt và bộ so sánh tokenizer có resume.
-M1-B2 corpus thật/benchmark đại diện còn phải làm; vocabulary sản phẩm 2–3B chưa khóa.
-Trạng thái/điểm tiếp tục: [docs/06_IMPLEMENTATION_TASKS.md](docs/06_IMPLEMENTATION_TASKS.md).
-
-## Tải và chạy phần mới
-
-Trong khi PR chưa merge, dùng nhánh **h2lm-scan-input-v1**, không tải main rồi tìm code M1.
+Nhánh **h2lm-neural-micro-training** có một thí nghiệm nhỏ, không phải model sản phẩm:
+710.616 tham số, vision + resampler + language decoder, checkpoint/optimizer/resume và kiểm
+tra che ảnh. Đã train local từ random weights trên dữ liệu tổng hợp cùng một số nhãn scan
+thật dạng silver AI. **Chưa đạt chất lượng đọc PDF mới hoặc suy luận pháp lý**; xem kết quả
+thành công và thất bại tại [docs/11_NEURAL_MICRO_EXPERIMENT.md](docs/11_NEURAL_MICRO_EXPERIMENT.md).
 
 ```powershell
-git clone --branch h2lm-scan-input-v1 https://github.com/HoangHung997/H2LM.git
+git clone --branch h2lm-neural-micro-training https://github.com/HoangHung997/H2LM.git
 cd H2LM
+python -m venv .venv-micro
+.\.venv-micro\Scripts\python.exe -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+.\.venv-micro\Scripts\python.exe -m pip install -e ".[scan,dev]"
+.\.venv-micro\Scripts\python.exe -m h2lm.experiments.cli --output artifacts/my-micro-run
 ```
 
-Trên Windows mở **RUN_TOKENIZER_DEMO.cmd**. Script tạo môi trường riêng, cài dependency nhỏ
-của tokenizer rồi train/evaluate fixture; không tải neural weights hoặc CUDA.
-Python 3.11 được dùng trong CI. Hoặc chạy thủ công:
+Đây là lệnh tùy chọn để tự sửa/chạy lại, không yêu cầu chủ dự án phải bật PC để tôi làm tiếp.
+Workflow `micro-neural.yml` chạy một đợt giới hạn trên CPU GitHub khi PR cùng repo thay đổi
+phần thí nghiệm, không dùng GPU máy người dùng. Nó chỉ train fixture tổng hợp; kết quả phải
+đọc từ Actions đúng SHA, không coi việc thêm YAML là đã huấn luyện xong.
 
-```powershell
-python -m venv .venv-tokenizer
-.\.venv-tokenizer\Scripts\python.exe -m pip install -e ".[tokenizer,dev]"
-.\.venv-tokenizer\Scripts\python.exe scripts/tokenizer_demo.py
-.\.venv-tokenizer\Scripts\python.exe -m pytest -q tests/test_m1_tokenizer.py
-```
+Checkpoint mới không tương thích trực tiếp Ollama/GGUF. Codec byte thí nghiệm không thay
+quyết định tokenizer sản phẩm. H2LM 2–3B chưa được pretrain; M1 corpus/tokenizer vẫn ACTIVE.
 
-Output ở `artifacts/tokenizer/`: tokenizer, metadata và báo cáo khôi phục text.
-Fixture tổng hợp gồm **24 train / 12 validation / 12 test**, không chứa căn cứ pháp lý thật.
-Một tokenizer chạy được chưa có nghĩa language/vision model đã được huấn luyện.
+## Các công cụ đã có
 
-## Tự mở và sửa
-
-| Muốn sửa | File/thư mục |
+| Công việc | Điểm chạy / tài liệu |
 |---|---|
-| Vocabulary size, BPE/Unigram, giới hạn dữ liệu | `configs/tokenizer/h2lm_tokenizer_dev.yaml` |
-| Nguồn corpus/split/checksum | `data/tokenizer_sample/manifest.json` hoặc manifest riêng |
-| Code tokenizer | `src/h2lm/tokenization/` |
-| Kích thước và kiến trúc neural model | `configs/model/`, `src/h2lm/modeling/h2lm.py` |
-| Tiêu chí kiểm thử | `tests/` |
+| Train và kiểm tokenizer mẫu | `RUN_TOKENIZER_DEMO.cmd`, docs/05_TOKENIZER.md |
+| Chuẩn bị corpus TXT / so sánh tokenizer | `RUN_CORPUS_BENCHMARK.cmd`, docs/07_CORPUS_AND_BENCHMARK.md |
+| Public legal seed | `RUN_PUBLIC_LEGAL_SEED.cmd`, docs/08_PUBLIC_LEGAL_SEED.md; lỗi acquisition TLS còn mở |
+| Chuẩn bị ảnh PDF scan local | `RUN_SCAN_PREPARE.cmd`, docs/09_SCAN_FIRST.md |
+| Đối chiếu ba bản scan thật | `RUN_REAL_SCAN_REVIEW.cmd`, docs/10_REAL_SCAN_SEED.md |
+| Neural experiment + resume | `src/h2lm/experiments/`, `configs/training/micro_vlm.yaml` |
+| Chạy checkpoint trên một crop | `scripts/predict_micro.py` |
 
-Source Python, cấu hình YAML/JSON và tài liệu Markdown đều mở được bằng VS Code/PyCharm.
-Tokenizer tools không import PyTorch; phần model cài môi trường riêng theo editing guide.
-Không tự đổi tokenizer đã gắn với model checkpoint vì IDs phải khớp embedding.
+Không commit hồ sơ riêng tư/dataset lớn/checkpoints trực tiếp vào Git. Ba PDF được người
+dùng cho phép công khai có metadata/nhãn nháp riêng; không suy quyền đó sang tài liệu khác.
+Nhãn gốc `assistant_visual_draft` không bị đổi thành `human_verified` trong thử nghiệm.
 
-## Tài liệu nguồn
+## Nguồn thiết kế và trạng thái
 
-- [Product spec](docs/00_PRODUCT_SPEC.md), [Architecture](docs/01_ARCHITECTURE.md).
-- [Data & teachers](docs/02_DATA_AND_TEACHERS.md), [Roadmap](docs/03_ROADMAP.md).
-- [Cách tự sửa](docs/04_EDITING_GUIDE.md), [Tokenizer M1-A](docs/05_TOKENIZER.md).
-- [Task status / SESSION HANDOFF](docs/06_IMPLEMENTATION_TASKS.md).
-
-Không commit dataset lớn, hồ sơ riêng tư hoặc checkpoints vào Git.
-Kết quả phải có code SHA/config/dataset hash; không dùng demo nhỏ để tuyên bố mạnh hơn model khác.
-
-## M1-B1 mới: chuẩn bị corpus và so sánh tokenizer
-
-Windows mở `RUN_CORPUS_BENCHMARK.cmd`. Demo import TXT **tổng hợp**, tách test khỏi đầu vào
-so sánh rồi huấn luyện bốn ứng viên BPE/Unigram trên CPU. Không phải model H2LM đã hiểu PDF.
-Có timeout từng ứng viên, `--resume` giữa ứng viên, kiểm tra hash và không tự ghi đè artifact.
-
-Để dùng tài liệu thật, đọc [hướng dẫn corpus/benchmark](docs/07_CORPUS_AND_BENCHMARK.md),
-chuẩn bị registry có người duyệt bên ngoài Git. Mẫu chưa được duyệt nằm ở
-`data/corpus_registry/registry.example.json`. Không tự gắn dữ liệu chưa kiểm chứng nhãn đã duyệt.
-Cấu hình so sánh: `configs/tokenizer/h2lm_comparison_pilot.yaml`.
-Chưa gọi teacher API, thuê GPU, kết nối PC runner hoặc huấn luyện neural model sản phẩm.
-
-## M1-B2: nguồn Công báo thật, không phải fixture
-
-Mở `RUN_PUBLIC_LEGAL_SEED.cmd` để tải danh sách 8 văn bản Công báo đã chọn và chạy tokenizer
-trên CPU. Lưu PDF nguồn, text từng trang, kiểm trùng, freeze và holdout sau lựa chọn validation.
-Đây là **seed**, chưa đạt corpus sản phẩm; text-layer chưa được kiểm chứng trực quan không được
-gắn nhãn người duyệt. Xem [phạm vi và cách chạy](docs/08_PUBLIC_LEGAL_SEED.md).
-Kết quả thực chạy phải đối chiếu Actions/PR đúng SHA. Không có checkpoint neural hiểu PDF.
-
-## Ưu tiên PDF scan lại — M1-SCAN-A
-
-Người dùng thường dùng tài liệu in rồi scan lại. Đây là input chính, không phải ca phụ.
-Mở `RUN_SCAN_PREPARE.cmd` (Python 3.11 x64) và chọn PDF. Chỉ chuẩn bị 5 trang đầu mặc định:
-ảnh trang, ảnh tổng quan, vùng ảnh chồng lấn giữ nguyên pixel, tọa độ về PDF và bản sao gốc.
-Xem `review.html` trong output local. Không upload, không OCR ngoài, chưa chạy neural H2LM.
-
-- Cấu hình: `configs/scan/scan_v1.yaml`; code: `src/h2lm/scans/`.
-- Hướng dẫn và yêu cầu scan: [docs/09_SCAN_FIRST.md](docs/09_SCAN_FIRST.md).
-- `expected_text: null`, không coi OCR ẩn/ảnh render là ground truth, không tự xóa dấu/mép/trang mờ.
-- Corpus thật và vision training vẫn chưa nghiệm thu. Acquisition ở PR #4 đã lỗi SSL trên run
-  36562685281; không tắt xác minh TLS hoặc thay dữ liệu giả để làm xanh.
-
-Code source hiện trên nhánh scan kế thừa PR #4, không chép đè bản ZIP M1-B2 cũ vào nhánh này.
+README → [Product](docs/00_PRODUCT_SPEC.md) → [Architecture](docs/01_ARCHITECTURE.md) →
+[Data/teachers](docs/02_DATA_AND_TEACHERS.md) → [Roadmap](docs/03_ROADMAP.md) →
+[Editing guide](docs/04_EDITING_GUIDE.md) → [SESSION HANDOFF](docs/06_IMPLEMENTATION_TASKS.md).
+Đọc thêm tài liệu task hiện tại trước sửa; giữ từng bước có bằng chứng. Không dùng loss giảm,
+round-trip tokenizer hay fit vài ảnh để tuyên bố model thông minh/ngang Gemma.
