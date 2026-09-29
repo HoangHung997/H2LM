@@ -21,10 +21,10 @@ Trạng thái/điểm tiếp tục: [docs/06_IMPLEMENTATION_TASKS.md](docs/06_IM
 
 ## Tải và chạy phần mới
 
-Trong khi PR chưa merge, dùng nhánh **h2lm-m1b-corpus**, không tải main rồi tìm code M1.
+Trong khi PR chưa merge, dùng nhánh **h2lm-m1b2-public-seed**, không tải main rồi tìm code M1.
 
 ```powershell
-git clone --branch h2lm-m1b-corpus https://github.com/HoangHung997/H2LM.git
+git clone --branch h2lm-m1b2-public-seed https://github.com/HoangHung997/H2LM.git
 cd H2LM
 ```
 
@@ -78,3 +78,11 @@ chuẩn bị registry có người duyệt bên ngoài Git. Mẫu chưa được
 `data/corpus_registry/registry.example.json`. Không tự gắn dữ liệu chưa kiểm chứng nhãn đã duyệt.
 Cấu hình so sánh: `configs/tokenizer/h2lm_comparison_pilot.yaml`.
 Chưa gọi teacher API, thuê GPU, kết nối PC runner hoặc huấn luyện neural model sản phẩm.
+
+## M1-B2: nguồn Công báo thật, không phải fixture
+
+Mở `RUN_PUBLIC_LEGAL_SEED.cmd` để tải danh sách 8 văn bản Công báo đã chọn và chạy tokenizer
+trên CPU. Lưu PDF nguồn, text từng trang, kiểm trùng, freeze và holdout sau lựa chọn validation.
+Đây là **seed**, chưa đạt corpus sản phẩm; text-layer chưa được kiểm chứng trực quan không được
+gắn nhãn người duyệt. Xem [phạm vi và cách chạy](docs/08_PUBLIC_LEGAL_SEED.md).
+Kết quả thực chạy phải đối chiếu Actions/PR đúng SHA. Không có checkpoint neural hiểu PDF.

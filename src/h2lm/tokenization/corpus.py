@@ -105,8 +105,12 @@ def load_corpus(
             raise ValueError("Source must be explicitly approved")
         origin = source.get("origin")
         if not isinstance(origin, str) or origin not in {
-                "synthetic_fixture", "human_verified", "teacher_verified"}:
+                "synthetic_fixture", "human_verified", "teacher_verified", "official_pdf_text"}:
             raise ValueError("Unsupported source origin")
+        if origin == "official_pdf_text":
+            from .seed_provenance import validate_official_source
+
+            validate_official_source(source)
         if origin == "teacher_verified":
             teacher = source.get("teacher")
             if not isinstance(teacher, dict) or teacher.get("review_status") != "verified":

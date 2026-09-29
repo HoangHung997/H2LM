@@ -13,8 +13,8 @@ Giữ phương án B: neural weights từ khởi tạo ngẫu nhiên, teacher ch
 |---|---|---|
 | M0 bootstrap | CPU CI đạt; PR #1 còn mở tại lúc khởi tạo M1-A | Head e135de2a8017d3801a7abb265508bd7b2967a8fe; run 36549909487, 3 tests đạt; CI cũ checkout merge a6d1d3dc5168ef768a3f74da2d795225389e68ee |
 | M1-A công cụ tokenizer và fixture | Engineering gate đạt, PR #2 còn mở | Head 5ddce928b934d91601039cea5f7e2562df983df6; run 36553295223 thành công; 40 tokenizer tests Windows, 44 full tests CPU |
-| M1-B1 importer + so sánh tokenizer | Triển khai trong PR mới; kiểm tra evidence trên head trước nghiệm thu | Offline reviewed TXT registry, dev/holdout separation, bounded subprocess trials, resume, tests, docs |
-| M1-B2 corpus thật + benchmark đại diện | NEXT / chưa làm | Chưa có corpus sản phẩm đã duyệt; chưa khóa BPE/Unigram/vocab size |
+| M1-B1 importer + so sánh tokenizer | Engineering gate đạt; PR #3 mở, head 389cd0d; run 36557607218 thành công | Offline reviewed TXT registry, dev/holdout separation, bounded subprocess trials, resume, tests, docs |
+| M1-B2 corpus thật + benchmark đại diện | ACTIVE: thêm public Gazette seed; kiểm evidence thực chạy trên PR mới | 8 nguồn định trước, PDF text-layer/mechanical scope, near-dup + freeze + holdout; chưa corpus sản phẩm đã duyệt |
 | M1-B tổng thể | ACTIVE | M1-B1 công cụ không thay thế thu thập/kiểm định corpus thật |
 | M1 toàn milestone | ACTIVE | M1-A đạt không đồng nghĩa M1 nghiên cứu đã hoàn tất |
 | M2–M7 | NOT STARTED | Giữ dependency như roadmap; không pretrain model lớn trước corpus/tokenizer gates |
@@ -55,3 +55,16 @@ CI mới phải checkout đúng PR head và lưu evidence; kết quả cuối gh
 Giới hạn còn lại: importer TXT bounded/in-memory; chưa PDF ingestion; chưa tự dò family/near-duplicate;
 chưa formal holdout freeze; resume giữa ứng viên tokenizer, chưa neural checkpoint/optimizer resume;
 chưa kiểm thử GTX 1070 thật, không có H2LM neural checkpoint đã hiểu tài liệu.
+
+## SESSION HANDOFF — M1-B2 public seed
+
+Base 389cd0d383bfcc2662764278de6ca5727992cbae, source tree bb0c77f26f0c91b69dad0f8bb77c3024591fbfd4
+đã đối chiếu với ZIP bằng toàn bộ Git tree hash trước sửa. Nhánh h2lm-m1b2-public-seed;
+PR base h2lm-m1b-corpus. Giữ main và PR trước nguyên trạng. Đọc docs/08_PUBLIC_LEGAL_SEED.md.
+
+Không suy job tải corpus đã thành công từ code. Đọc workflow public-legal-seed và CI trên đúng HEAD.
+Origin official_pdf_text là seed-only, không fake human review. Corpus pilot gate giữ nguyên.
+Chưa có neural checkpoint/GTX 1070 test, không teacher API, không chi tiền.
+Nếu acquisition thất bại do nguồn/robots/parser, báo đúng và sửa trong M1-B2; không fallback fixture.
+Nếu seed chạy xong, dùng snapshot và báo cáo để kiểm định/mở rộng corpus M1-B2 trước M2.
+Kết quả cuối ghi vào PR conversation gắn SHA, tránh sửa evidence rồi đổi code SHA vô hạn.

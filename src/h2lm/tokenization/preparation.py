@@ -115,7 +115,7 @@ def prepare_corpus(registry: str | Path, output: str | Path) -> dict[str, Any]:
             raise ValueError("Document must declare public/private sensitivity")
         for key in ("source_uri", "rights_note", "reviewed_by", "reviewed_at", "category"):
             required_string(doc, key)
-        if doc.get("origin") not in {"synthetic_fixture", "human_verified", "teacher_verified"}:
+        if doc.get("origin") not in {"synthetic_fixture", "human_verified", "teacher_verified", "official_pdf_text"}:
             raise ValueError("Unsupported reviewed document origin")
         relative = Path(required_string(doc, "path"))
         path = (root / relative).resolve()
@@ -153,6 +153,8 @@ def prepare_corpus(registry: str | Path, output: str | Path) -> dict[str, Any]:
         encoded = ("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)).encode("utf-8")
         entry = {key: doc[key] for key in ("source_uri", "rights_note", "approved", "origin",
                                          "sensitivity", "reviewed_by", "reviewed_at")}
+        if "verification" in doc:
+            entry["verification"] = doc["verification"]
         if "teacher" in doc:
             entry["teacher"] = doc["teacher"]
         entry.update(id=source_id, path=shard, split=split, sha256=digest(encoded),

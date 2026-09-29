@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "scope": "tokenizer-seed-only",
+  "name": "official-gazette-seed-20260929",
+  "rights_note": "Nguồn: Công báo nước CHXHCN Việt Nam, congbao.chinhphu.vn. Chỉ dùng nội dung văn bản quy phạm pháp luật được công bố; không lấy bài bình luận/ảnh báo chí hay dữ liệu cá nhân riêng tư. Ghi nguồn theo yêu cầu tái phát hành của Công báo. Tham chiếu phạm vi loại trừ tại khoản 2 Điều 15 Luật SHTT (WIPO Lex VN063); không phải ý kiến pháp lý về mọi dữ liệu tương lai.",
+  "rights_references": [
+    "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-43-2022-nd-cp-37466.htm",
+    "https://www.wipo.int/wipolex/en/legislation/details/12011"
+  ],
+  "approval_scope": "assistant reviewed official landing metadata; automated text gate only, NOT human legal/visual review",
+  "documents": [
+    {
+      "id": "qh22-2023",
+      "code": "22/2023/QH15",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/luat-so-22-2023-qh15-39855.htm",
+      "split": "train",
+      "family_id": "procurement",
+      "category": "law",
+      "title": "Luật Đấu thầu",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "qh20-2023",
+      "code": "20/2023/QH15",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/luat-so-20-2023-qh15-39848.htm",
+      "split": "train",
+      "family_id": "electronic-transactions",
+      "category": "law",
+      "title": "Luật Giao dịch điện tử",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "tt10-2021-bxd",
+      "code": "10/2021/TT-BXD",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-10-2021-tt-bxd-34221.htm",
+      "split": "train",
+      "family_id": "construction-housing",
+      "category": "circular",
+      "title": "Hướng dẫn quản lý chất lượng và bảo trì công trình",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "tt09-2021-bxd",
+      "code": "09/2021/TT-BXD",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-09-2021-tt-bxd-34204.htm",
+      "split": "train",
+      "family_id": "construction-housing",
+      "category": "circular",
+      "title": "Hướng dẫn phát triển và quản lý nhà ở xã hội",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "nd30-2020",
+      "code": "30/2020/NĐ-CP",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-30-2020-nd-cp-30858.htm",
+      "split": "validation",
+      "family_id": "records-administration",
+      "category": "decree",
+      "title": "Công tác văn thư",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "nd43-2022",
+      "code": "43/2022/NĐ-CP",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-43-2022-nd-cp-37466.htm",
+      "split": "validation",
+      "family_id": "water-infrastructure",
+      "category": "decree",
+      "title": "Tài sản kết cấu hạ tầng cấp nước sạch",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "nd13-2023",
+      "code": "13/2023/NĐ-CP",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-13-2023-nd-cp-39228.htm",
+      "split": "test",
+      "family_id": "personal-data",
+      "category": "decree",
+      "title": "Bảo vệ dữ liệu cá nhân",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    },
+    {
+      "id": "tt01-2020-btp",
+      "code": "01/2020/TT-BTP",
+      "landing_url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-01-2020-tt-btp-30866.htm",
+      "split": "test",
+      "family_id": "certification",
+      "category": "circular",
+      "title": "Chứng thực bản sao và chữ ký",
+      "acquisition_approved": true,
+      "version_scope": "as-published-not-consolidated"
+    }
+  ]
+}
