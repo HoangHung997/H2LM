@@ -145,7 +145,7 @@ class OutputBudget:
 def _pdf_point(page: Any, width: int, height: int, rotation: int, x: int, y: int) -> list[float]:
     import ctypes
 
-    import pypdfium2.raw as raw
+    from pypdfium2 import raw
 
     px, py = ctypes.c_double(), ctypes.c_double()
     ok = raw.FPDF_DeviceToPage(page.raw, 0, 0, width, height, rotation // 90,
@@ -164,10 +164,12 @@ def _quality(image: Any) -> dict[str, Any]:
         n = gray.width * gray.height
         dark = sum(histogram[:200]) / n
         stats = ImageStat.Stat(gray)
-        with gray.resize((256, 256)) as small:
-            with ImageChops.offset(small, 1, 0) as offset:
-                with ImageChops.difference(small, offset) as diff:
-                    edge = ImageStat.Stat(diff).mean[0]
+        with (
+            gray.resize((256, 256)) as small,
+            ImageChops.offset(small, 1, 0) as offset,
+            ImageChops.difference(small, offset) as diff,
+        ):
+            edge = ImageStat.Stat(diff).mean[0]
         warnings = []
         if dark < 0.0005:
             warnings.append("blank_or_faint_candidate_manual_review")
@@ -181,8 +183,8 @@ def _quality(image: Any) -> dict[str, Any]:
 
 def render_request(request_path: str | Path) -> None:
     import pypdfium2 as pdfium
-    import pypdfium2.raw as raw
     from PIL import Image
+    from pypdfium2 import raw
 
     request_path = Path(request_path).resolve()
     out = request_path.parent
@@ -226,41 +228,43 @@ def render_request(request_path: str | Path) -> None:
         for index, w, h, boxes in planned:
             with closing(pdf[index]) as page:
                 folder = f"pages/{index + 1:05d}"
-                with closing(page.render(scale=scale, rotation=rotation, may_draw_forms=False,
-                                         rev_byteorder=True)) as bitmap:
-                    with bitmap.to_pil().convert("RGB") as image:
-                        if image.size != (w, h):
-                            raise ValueError("Render dimensions disagree with preflight")
-                        full = budget.save_image(image, f"{folder}/page.png")
-                        with image.copy() as preview:
-                            preview.thumbnail((cfg.preview_size, cfg.preview_size),
-                                              Image.Resampling.LANCZOS)
-                            overview = budget.save_image(preview, f"{folder}/overview.png")
-                        quality = _quality(image)
-                        regions = []
-                        for tile_index, box in enumerate(boxes):
-                            with image.crop(box) as tile:
-                                item = budget.save_image(tile, f"{folder}/tile-{tile_index:04d}.png")
-                            x0, y0, x1, y1 = box
-                            item["bbox_pixels_xyxy"] = list(box)
-                            item["quad_pdf_canvas_units"] = [
-                                _pdf_point(page, w, h, rotation, x, y)
-                                for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
-                            ]
-                            regions.append(item)
-                        # Only count existing PDF text objects. Never extract them as input or labels.
-                        with closing(page.get_textpage()) as textpage:
-                            native_chars = textpage.count_chars()
-                        pages.append({
-                            "page_number": index + 1, "pdf_rotation": page.get_rotation(),
-                            "additional_clockwise_rotation": rotation, "pdf_bbox": list(page.get_bbox()),
-                            "render_canvas_pixels": [w, h], "page": full, "overview": overview,
-                            "tiles": regions, "quality": quality,
-                            "native_text_chars": native_chars,
-                            "native_text_state": ("present_untrusted" if native_chars else "none"),
-                            "vision_required": True, "label_status": "unlabeled",
-                            "expected_text": None, "eligible_for_supervised_training": False,
-                        })
+                with (
+                    closing(page.render(scale=scale, rotation=rotation, may_draw_forms=False,
+                                        rev_byteorder=True)) as bitmap,
+                    bitmap.to_pil().convert("RGB") as image,
+                ):
+                    if image.size != (w, h):
+                        raise ValueError("Render dimensions disagree with preflight")
+                    full = budget.save_image(image, f"{folder}/page.png")
+                    with image.copy() as preview:
+                        preview.thumbnail((cfg.preview_size, cfg.preview_size),
+                                          Image.Resampling.LANCZOS)
+                        overview = budget.save_image(preview, f"{folder}/overview.png")
+                    quality = _quality(image)
+                    regions = []
+                    for tile_index, box in enumerate(boxes):
+                        with image.crop(box) as tile:
+                            item = budget.save_image(tile, f"{folder}/tile-{tile_index:04d}.png")
+                        x0, y0, x1, y1 = box
+                        item["bbox_pixels_xyxy"] = list(box)
+                        item["quad_pdf_canvas_units"] = [
+                            _pdf_point(page, w, h, rotation, x, y)
+                            for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+                        ]
+                        regions.append(item)
+                    # Only count existing PDF text objects. Never extract them as input or labels.
+                    with closing(page.get_textpage()) as textpage:
+                        native_chars = textpage.count_chars()
+                    pages.append({
+                        "page_number": index + 1, "pdf_rotation": page.get_rotation(),
+                        "additional_clockwise_rotation": rotation, "pdf_bbox": list(page.get_bbox()),
+                        "render_canvas_pixels": [w, h], "page": full, "overview": overview,
+                        "tiles": regions, "quality": quality,
+                        "native_text_chars": native_chars,
+                        "native_text_state": ("present_untrusted" if native_chars else "none"),
+                        "vision_required": True, "label_status": "unlabeled",
+                        "expected_text": None, "eligible_for_supervised_training": False,
+                    })
     report = {
         "schema_version": 1, "status": "prepared_images_only", "scope": "M1-scan-data-preparation",
         **{k: request[k] for k in ("source_sha256", "document_id", "family_id", "split",

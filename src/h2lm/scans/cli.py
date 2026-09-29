@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import ScanConfig
@@ -25,7 +26,7 @@ def main() -> int:
     args = parser.parse_args()
     if args.demo and args.pdf:
         parser.error("Choose --demo OR --pdf")
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S-%fZ")
     output = args.output or Path("artifacts/scan-input") / stamp
     try:
         if args.demo:
@@ -59,8 +60,8 @@ def main() -> int:
     except KeyboardInterrupt:
         print("Interrupted; partial output is not a completed dataset.", file=sys.stderr)
         return 130
-    except Exception as error:
-        print(f"Scan preparation failed: {error}", file=sys.stderr)
+    except Exception:
+        logging.exception("Scan preparation failed")
         return 2
 
 

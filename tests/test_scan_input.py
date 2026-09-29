@@ -92,9 +92,11 @@ def test_image_only_pdf_preserves_source_and_tiles(pdf_file, config, tmp_path):
     assert page["expected_text"] is None and page["eligible_for_supervised_training"] is False
     with Image.open(out / page["page"]["path"]) as image:
         for tile in page["tiles"]:
-            with Image.open(out / tile["path"]) as crop:
-                with image.crop(tile["bbox_pixels_xyxy"]) as expected:
-                    assert ImageChops.difference(crop, expected).getbbox() is None
+            with (
+                Image.open(out / tile["path"]) as crop,
+                image.crop(tile["bbox_pixels_xyxy"]) as expected,
+            ):
+                assert ImageChops.difference(crop, expected).getbbox() is None
             assert ingest.file_hash(out / tile["path"]) == tile["sha256"]
     assert (out / "manifest.json").exists() and not (out / "FAILED.json").exists()
 
@@ -128,7 +130,7 @@ def test_false_hidden_ocr_is_never_ground_truth(pdf_file, config, tmp_path):
 
 @pytest.mark.parametrize("rotation", [0, 90, 180, 270])
 def test_pdf_coordinate_roundtrip_with_crop_and_rotation(pdf_file, config, tmp_path, rotation):
-    import pypdfium2.raw as raw
+    from pypdfium2 import raw
 
     altered = tmp_path / "cropped.pdf"
     writer = pypdf.PdfWriter(clone_from=pdf_file)
@@ -141,18 +143,17 @@ def test_pdf_coordinate_roundtrip_with_crop_and_rotation(pdf_file, config, tmp_p
     w, h = record["render_canvas_pixels"]
     assert record["pdf_rotation"] == 90
     assert [w, h] == ([440, 340] if rotation in (0, 180) else [340, 440])
-    with pdfium.PdfDocument(altered) as pdf:
-        with closing(pdf[0]) as page:
-            for tile in record["tiles"]:
-                x0, y0, x1, y1 = tile["bbox_pixels_xyxy"]
-                corners = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-                for (px, py), (x, y) in zip(tile["quad_pdf_canvas_units"], corners):
-                    dx, dy = ctypes.c_int(), ctypes.c_int()
-                    assert raw.FPDF_PageToDevice(page.raw, 0, 0, w, h, rotation // 90,
-                                                px, py, ctypes.byref(dx), ctypes.byref(dy))
-                    assert abs(dx.value - x) <= 1 and abs(dy.value - y) <= 1
-                    assert 10 - 1e-6 <= px <= 350 + 1e-6
-                    assert 20 - 1e-6 <= py <= 460 + 1e-6
+    with pdfium.PdfDocument(altered) as pdf, closing(pdf[0]) as page:
+        for tile in record["tiles"]:
+            x0, y0, x1, y1 = tile["bbox_pixels_xyxy"]
+            corners = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+            for (px, py), (x, y) in zip(tile["quad_pdf_canvas_units"], corners):
+                dx, dy = ctypes.c_int(), ctypes.c_int()
+                assert raw.FPDF_PageToDevice(page.raw, 0, 0, w, h, rotation // 90,
+                                            px, py, ctypes.byref(dx), ctypes.byref(dy))
+                assert abs(dx.value - x) <= 1 and abs(dy.value - y) <= 1
+                assert 10 - 1e-6 <= px <= 350 + 1e-6
+                assert 20 - 1e-6 <= py <= 460 + 1e-6
 
 
 def test_blank_page_kept_and_multipage_scope(config, tmp_path):

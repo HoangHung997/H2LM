@@ -8,7 +8,6 @@ from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFo
 
 from .ingest import write_json
 
-
 LINES = [
     "MẪU KIỂM THỬ H2LM — KHÔNG PHẢI VĂN BẢN PHÁP LUẬT",
     "Điều 1. Nội dung giả lập để kiểm tra ảnh scan",
