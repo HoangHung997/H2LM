@@ -68,3 +68,28 @@ Chưa có neural checkpoint/GTX 1070 test, không teacher API, không chi tiền
 Nếu acquisition thất bại do nguồn/robots/parser, báo đúng và sửa trong M1-B2; không fallback fixture.
 Nếu seed chạy xong, dùng snapshot và báo cáo để kiểm định/mở rộng corpus M1-B2 trước M2.
 Kết quả cuối ghi vào PR conversation gắn SHA, tránh sửa evidence rồi đổi code SHA vô hạn.
+
+## SESSION HANDOFF — M1-SCAN-A (ưu tiên mới: tài liệu scan lại)
+
+Nguồn tiếp tục thực tế: PR #4, head c0049c77a71a30ab7fad20136de5079a95194bb4,
+tree 809f06a90b0b957b9d4b66db893bd1814d977a2d. Không lấy ZIP M1-B2 cũ ghi đè nhánh.
+CI mã run 36562685102 thành công; acquisition run 36562685281 thất bại xác minh SSL certificate.
+Giữ lỗi này OPEN, không hạ bảo mật TLS. Corpus sản phẩm/tokenizer selection M1 vẫn ACTIVE.
+
+Theo yêu cầu mới, làm một task dữ liệu độc lập M1-SCAN-A: nhận PDF local kể cả scan không chữ,
+render/tile, giữ nguồn, tọa độ, giới hạn xử lý, preview và regression stress cases. Đây là bước
+chuẩn bị dữ liệu trong M1; không chuyển M2 pretraining. Spec scan và điểm sửa: docs/09_SCAN_FIRST.md.
+Nhánh h2lm-scan-input-v1 kế thừa PR #4; chưa merge các PR hay đổi cấu hình neural model.
+
+Bằng chứng trước push: 54 tests scan local đạt trên Linux/Python 3.13.5/PDFium wrapper 5.8.0/
+Pillow 12.3.0; 8 trang mô phỏng scan, 192 vùng ảnh tại cấu hình mặc định. Lỗi context manager
+PdfPage và cấu tạo PDF fixture lớp chữ ẩn được phát hiện rồi sửa, test chạy lại đạt.
+Đây là test riêng các module scan; không nhận bản dựng local M1-B1 là full remote PR #4.
+CI cập nhật cài scan extra, chạy cả test cũ lẫn test scan trên đúng HEAD và xuất git archive.
+Kết quả CI cuối ghi vào PR discussion, không suy GPU test từ CI CPU.
+
+Còn phải làm: lấy PDF scan thật được người dùng cho phép; đối chiếu từng vùng, gán unreadable/
+missing/uncertain trung thực; tách toàn bộ các bản scan/ảnh cắt/phiên bản cùng family về một split;
+đo CER và lỗi chữ số/dấu riêng, huấn luyện vision sau khi corpus gate đạt. Synthetic rescan
+không thay nghiệm thu scanner thật. Output scan chưa có text label, không train-ready.
+Chưa auto-rotate/deskew, chưa OCR, chưa teacher call, chưa neural train hay GPU nghiệm thu.

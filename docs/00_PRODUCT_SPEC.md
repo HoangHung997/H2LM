@@ -8,8 +8,8 @@ H2LM không được định nghĩa là OCR + agent. OCR, layout understanding, 
 
 ## 2. Use cases ưu tiên
 
-1. PDF có text layer.
-2. PDF scan không có text layer.
+1. PDF in rồi scan lại, kể cả không có text layer: input ưu tiên cao nhất.
+2. PDF có text layer hoặc lớp OCR ẩn chưa tin cậy.
 3. Hồ sơ pháp lý nhiều trang.
 4. Luật, nghị định, thông tư, quyết định và phụ lục.
 5. Văn bản sửa đổi, bổ sung, thay thế, bãi bỏ.
@@ -52,3 +52,11 @@ Training model sản phẩm không bị giới hạn bởi GPU này; có thể d
 ## 7. Tiêu chí sản phẩm
 
 H2LM chỉ được coi là tiến bộ khi benchmark chứng minh cải thiện. Không dùng cảm giác chat hay demo đơn lẻ để tuyên bố model tốt hơn.
+
+## 8. Yêu cầu scan-first đã bổ sung
+
+Giữ ảnh bằng chứng gốc. Huấn luyện và đánh giá phải có scan thật tiếng Việt, chữ nhỏ, trang
+nghiêng/ngược, mờ/nén, nền tối, dấu mộc và nhiều lần scan. Không tự sửa ký tự/số khi chưa nhìn rõ;
+không coi lớp OCR cũ là nhãn đúng. Tách bản quét của cùng văn bản/family khỏi các split khác.
+Bộ render/tile không phải model đọc hiểu. Không nghiệm thu chỉ bằng PDF text-layer hoặc demo tổng hợp.
+Chi tiết thực thi, những gì chưa làm và chuẩn nghiệm thu: docs/09_SCAN_FIRST.md.
