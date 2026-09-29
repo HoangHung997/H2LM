@@ -56,8 +56,8 @@ def load_plan(path: str | Path) -> dict[str, Any]:
         raise ValueError("Invalid corpus minimums")
     if any(type(v) is not int or v < 1 for v in minimums.values()):
         raise ValueError("Corpus minimums must be positive integers")
-    return dict(schema_version=1, mode=plan["mode"], timeout_seconds=seconds,
-                candidates=[asdict(TokenizerConfig(**c)) for c in candidates], minimums=minimums)
+    return {"schema_version": 1, "mode": plan["mode"], "timeout_seconds": seconds,
+            "candidates": [asdict(TokenizerConfig(**c)) for c in candidates], "minimums": minimums}
 
 
 def development_corpus(manifest: Path) -> Corpus:

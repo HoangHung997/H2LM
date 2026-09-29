@@ -145,10 +145,10 @@ def prepare_corpus(registry: str | Path, output: str | Path) -> dict[str, Any]:
             raise ValueError("Prepared record budget exceeded")
         source_id = f"source-{index:04d}"
         shard = f"{split}/{source_id}.jsonl"
-        rows = [dict(id=f"{source_id}-{n:05d}", document_id=document_id,
-                     family_id=family_id, category=doc["category"], text=part,
-                     source_char_start=start, source_char_end=end,
-                     raw_document_sha256=doc["sha256"])
+        rows = [{"id": f"{source_id}-{n:05d}", "document_id": document_id,
+                 "family_id": family_id, "category": doc["category"], "text": part,
+                 "source_char_start": start, "source_char_end": end,
+                 "raw_document_sha256": doc["sha256"]}
                 for n, (start, end, part) in enumerate(chunks)]
         encoded = ("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)).encode("utf-8")
         entry = {key: doc[key] for key in ("source_uri", "rights_note", "approved", "origin",
@@ -159,9 +159,9 @@ def prepare_corpus(registry: str | Path, output: str | Path) -> dict[str, Any]:
                      raw_document_sha256=doc["sha256"])
         source_entries.append(entry)
         rows_by_doc.append((shard, encoded))
-        inventory.append(dict(document_id=document_id, family_id=family_id, split=split,
-                              characters=len(text), utf8_bytes=len(data), records=len(rows),
-                              raw_sha256=digest(data), sensitivity=doc["sensitivity"]))
+        inventory.append({"document_id": document_id, "family_id": family_id, "split": split,
+                          "characters": len(text), "utf8_bytes": len(data), "records": len(rows),
+                          "raw_sha256": digest(data), "sensitivity": doc["sensitivity"]})
     if {entry["split"] for entry in source_entries} != SPLITS:
         raise ValueError("Registry must contain train, validation and sealed test documents")
     # Use an isolated staging directory, validate with the existing M1-A loader first.

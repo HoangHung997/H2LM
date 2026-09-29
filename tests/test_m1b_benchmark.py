@@ -9,7 +9,12 @@ import pytest
 import yaml
 
 from h2lm.tokenization import benchmark
-from h2lm.tokenization.benchmark import compare_tokenizers, development_corpus, load_plan, run_worker
+from h2lm.tokenization.benchmark import (
+    compare_tokenizers,
+    development_corpus,
+    load_plan,
+    run_worker,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "configs/tokenizer/h2lm_comparison_fixture.yaml"
