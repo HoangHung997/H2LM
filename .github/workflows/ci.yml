@@ -34,8 +34,8 @@ jobs:
         run: ruff check src tests scripts
       - name: Compile
         run: python -m compileall -q src tests scripts
-      - name: Tokenizer contract tests
-        run: python -m pytest -q tests/test_m1_tokenizer.py tests/test_m1b_preparation.py tests/test_m1b_benchmark.py tests/test_m1b2_public_seed.py tests/test_scan_input.py --junitxml=artifacts/tokenizer-tests.xml
+      - name: Tokenizer and scan contract tests
+        run: python -m pytest -q tests/test_m1_tokenizer.py tests/test_m1b_preparation.py tests/test_m1b_benchmark.py tests/test_m1b2_public_seed.py tests/test_scan_input.py tests/test_scan_forms.py tests/test_scan_review.py --junitxml=artifacts/tokenizer-tests.xml
       - name: Train and evaluate synthetic fixture
         run: python scripts/tokenizer_demo.py --output artifacts/tokenizer-ci
       - name: Prepare corpus and compare tokenizer candidates (synthetic only)

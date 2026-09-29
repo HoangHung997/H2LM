@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import ScanConfig, tiles
+from .form_policy import initialize_static_forms
 
 
 def file_hash(path: Path) -> str:
@@ -184,7 +185,6 @@ def _quality(image: Any) -> dict[str, Any]:
 def render_request(request_path: str | Path) -> None:
     import pypdfium2 as pdfium
     from PIL import Image
-    from pypdfium2 import raw
 
     request_path = Path(request_path).resolve()
     out = request_path.parent
@@ -197,11 +197,10 @@ def render_request(request_path: str | Path) -> None:
     budget = OutputBudget(out, cfg.max_output_bytes)
     scale = cfg.dpi / 72.0
     with pdfium.PdfDocument(source) as pdf:
+        form_policy = initialize_static_forms(pdf)
         total_pages = len(pdf)
         if total_pages < 1 or total_pages > cfg.max_document_pages:
             raise ValueError("Document page count exceeds configured limit")
-        if raw.FPDF_GetFormType(pdf.raw) != 0:
-            raise ValueError("Interactive forms need separately reviewed flattening; not silently omitted")
         first = request["start_page"] - 1
         if first >= total_pages:
             raise ValueError("Start page outside document")
@@ -229,7 +228,7 @@ def render_request(request_path: str | Path) -> None:
             with closing(pdf[index]) as page:
                 folder = f"pages/{index + 1:05d}"
                 with (
-                    closing(page.render(scale=scale, rotation=rotation, may_draw_forms=False,
+                    closing(page.render(scale=scale, rotation=rotation, may_draw_forms=True, draw_annots=True,
                                         rev_byteorder=True)) as bitmap,
                     bitmap.to_pil().convert("RGB") as image,
                 ):
@@ -273,6 +272,7 @@ def render_request(request_path: str | Path) -> None:
         "complete_document": first == 0 and last == total_pages, "pages": pages,
         "source_snapshot": "source.pdf", "config": asdict(cfg),
         "native_text_policy": "never_used_as_input_or_ground_truth",
+        "form_policy": form_policy,
         "transforms": "render_and_explicit_rotation_only; no_deskew_no_denoise_no_binarize",
         "coordinate_system": "pixel edges, top-left; PDF quads from FPDF_DeviceToPage",
         "dpi_note": "requested dpi assumes 1 PDF canvas unit=1/72 inch; not scanner resolution",
