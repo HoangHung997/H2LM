@@ -29,17 +29,40 @@ Repository ưu tiên **Python + PyTorch + YAML/JSON + Markdown**. Những thứ 
 
 Mục tiêu là có thể mở repository bằng VS Code/PyCharm, đọc tài liệu và sửa từng phần mà không cần công cụ nội bộ bí mật.
 
+## Bắt đầu nhanh
+
+Windows PowerShell:
+
+    git clone https://github.com/HoangHung997/H2LM.git
+    cd H2LM
+    git switch h2lm-v1-bootstrap
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    pip install -e ".[dev]"
+    pytest -q
+    python scripts/smoke_train.py --device cuda
+
+Smoke train chỉ xác nhận model random-weight có thể forward/backward. Nó **không phải** checkpoint đã được huấn luyện.
+
+## Tài liệu nguồn
+
+- docs/00_PRODUCT_SPEC.md — H2LM V1 phải làm gì.
+- docs/01_ARCHITECTURE.md — kiến trúc và các phần có thể thay.
+- docs/02_DATA_AND_TEACHERS.md — phương án B và provenance dữ liệu.
+- docs/03_ROADMAP.md — các milestone từ bootstrap tới local inference.
+- docs/04_EDITING_GUIDE.md — cách tự mở, sửa và thử model.
+
 ## Trạng thái
 
 Repository đang ở giai đoạn **V1 bootstrap / architecture lock**. Chưa có checkpoint H2LM V1 hoàn chỉnh. Mọi kết quả benchmark phải gắn với commit SHA + config + dataset manifest để có thể tái lập.
 
 ## Quy ước chính
 
-- `docs/` — đặc tả và quyết định kiến trúc.
-- `configs/` — cấu hình model/train/data; ưu tiên chỉnh ở đây.
-- `src/h2lm/` — mã nguồn model và pipeline.
-- `tests/` — smoke/unit tests.
-- `data/` — chỉ chứa manifest/mẫu nhỏ; không commit dataset lớn hay tài liệu có hạn chế bản quyền.
-- `artifacts/` và checkpoints — không commit trực tiếp vào Git.
+- docs/ — đặc tả và quyết định kiến trúc.
+- configs/ — cấu hình model/train/data; ưu tiên chỉnh ở đây.
+- src/h2lm/ — mã nguồn model và pipeline.
+- tests/ — smoke/unit tests.
+- data/ — chỉ chứa manifest/mẫu nhỏ; không commit dataset lớn hay tài liệu có hạn chế bản quyền.
+- artifacts/ và checkpoints — không commit trực tiếp vào Git.
 
 Chi tiết triển khai sẽ được bổ sung theo từng milestone H2LM V1.
