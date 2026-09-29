@@ -1,70 +1,68 @@
 # H2LM V1
 
-Model **vision-first / document-first**, ưu tiên PDF tiếng Việt được in rồi scan lại,
-tài liệu pháp lý nhiều trang, bảng, điều/khoản/điểm và đáp án có căn cứ. Đích chạy sản phẩm:
-GTX 1070 8 GB, **chưa nghiệm thu**. Không thiết kế thành OCR ngoài rồi nhờ agent khác hiểu hộ.
+Model vision-first/document-first cho tài liệu pháp lý tiếng Việt, ưu tiên PDF in rồi
+scan lại. Phương án B: tự huấn luyện từ random weights, teacher chỉ hỗ trợ dữ liệu có
+nguồn/kiểm chứng; không nhập weights của model khác. Source Python/YAML/JSON mở và sửa được.
+Không tự thuê GPU, gọi API có phí hay đưa hồ sơ chưa được cho phép ra ngoài.
 
-## Nguyên tắc — phương án B
+## Mới nhất — mốc 1 tỷ tham số
 
-Neural weights khởi tạo ngẫu nhiên; teacher có thể hỗ trợ tạo/kiểm tra dữ liệu, không nhập
-weights của teacher. Không mặc định output AI là ground truth. Không tự chi tiền thuê GPU,
-gọi API trả phí hoặc đưa hồ sơ chưa được cho phép ra ngoài. Mã Python, YAML/JSON và tài liệu
-Markdown đều mở được bằng VS Code/PyCharm; không có lõi binary bí mật để khóa người dùng.
+Theo yêu cầu chủ dự án, nhánh **h2lm-scale-1b** bổ sung một kiến trúc thực sự có
+**1.001.571.584 tham số duy nhất**, gồm vision 85.543.680, fusion 8.485.632 và language
+907.542.272. Không cộng các checkpoint, không thêm tensor thừa hoặc nhân bản alias để đủ số.
 
-## Mới nhất: EXP-02 — đọc trường số/ngày chưa dùng để học
-
-Nhánh **h2lm-crop-generalization-v2** thêm một thí nghiệm CNN + decoder cross-attention,
-524.852 tham số; 1.200 ảnh train / 96 validation có đáp án đầy đủ không trùng. Train thật
-1.800 bước, lưu checkpoint và kiểm tra che/đổi ảnh. Đây là crop một dòng, không phải OCR
-cả trang hoặc suy luận pháp luật. Scan viết tay thật vẫn còn lỗi; giữ báo cáo cả phần sai.
-Không thay model/core/tokenizer sản phẩm hoặc xóa thử nghiệm trước.
+**Đạt quy mô 1B không có nghĩa đã pretrain xong hoặc đọc hiểu PDF tốt.** Lượt hiện tại là
+pilot tám bước cập nhật toàn bộ kiến trúc và kiểm checkpoint. Corpus, OCR/vision chất lượng,
+suy luận pháp lý, tokenizer sản phẩm, Ollama/GGUF và GTX 1070 vẫn chưa nghiệm thu.
+Không thay kết quả các thí nghiệm nhỏ trước bằng con số 1B để tuyên bố thông minh hơn.
 
 ```powershell
-git clone --branch h2lm-crop-generalization-v2 https://github.com/HoangHung997/H2LM.git
+git clone --branch h2lm-scale-1b https://github.com/HoangHung997/H2LM.git
 cd H2LM
-python -m venv .venv-crop
-.\.venv-crop\Scripts\python.exe -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
-.\.venv-crop\Scripts\python.exe -m pip install -e ".[scan,dev]"
-.\.venv-crop\Scripts\python.exe -m h2lm.experiments.crop2_train --output artifacts/my-crop-run
+python -m venv .venv-scale
+.\.venv-scale\Scripts\python.exe -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+.\.venv-scale\Scripts\python.exe -m pip install -e ".[scan,dev]"
+.\.venv-scale\Scripts\python.exe -m h2lm.scale.runner count
 ```
 
-Workflow `crop-neural.yml` tự chạy một đợt có giới hạn trên CPU GitHub cho PR cùng repo;
-không cần chủ dự án bật PC. Lệnh trên chỉ dành cho tự mở/sửa/chạy lại. Cấu hình nằm trong
-`configs/training/crop_v2.yaml`; chi tiết và giới hạn: [EXP-02](docs/12_CROP_GENERALIZATION.md).
-Nhãn silver chỉ dùng thử riêng khi bật cờ rõ ràng; không đổi nhãn AI thành nhãn người duyệt.
+Count dùng meta, không cấp phát hàng GB. Train/verify lớn cần cờ `--allow-large` và kiểm
+bộ nhớ/đĩa; đọc [docs/13_SCALE_1B.md](docs/13_SCALE_1B.md) trước khi chạy. Các lệnh chỉ là
+để chủ dự án tự mở/sửa/chạy lại, không yêu cầu bật PC của họ để tôi triển khai tiếp.
 
-## EXP-01: đã chạy thử huấn luyện neural
+| Muốn sửa | Vị trí |
+|---|---|
+| Kích thước 1B, vision/decoder, context | `configs/model/h2lm_v1_1b.yaml` |
+| Kiến trúc 2D vision/resampler/GQA decoder | `src/h2lm/scale/model.py` |
+| Huấn luyện pilot và đếm tham số | `src/h2lm/scale/runner.py` |
+| SGD chuẩn/optimizer-in-backward ít RAM | `src/h2lm/scale/optim.py` |
+| Checkpoint nhiều shard, hash và load | `src/h2lm/scale/storage.py` |
+| Bằng chứng/gate quy mô/chất lượng | `docs/13_SCALE_1B.md`, PR conversation/Actions đúng SHA |
 
-Nhánh **h2lm-neural-micro-training** có một thí nghiệm nhỏ, không phải model sản phẩm:
-710.616 tham số, vision + resampler + language decoder, checkpoint/optimizer/resume và kiểm
-tra che ảnh. Đã train local từ random weights trên dữ liệu tổng hợp cùng một số nhãn scan
-thật dạng silver AI. **Chưa đạt chất lượng đọc PDF mới hoặc suy luận pháp lý**; xem kết quả
-thành công và thất bại tại [docs/11_NEURAL_MICRO_EXPERIMENT.md](docs/11_NEURAL_MICRO_EXPERIMENT.md).
+Workflow `scale-1b.yml` kiểm toàn bộ model 1B FP32 trên standard public Ubuntu CPU. Không
+thay bằng tiny ở bước chứng minh quy mô. Tiny tests chạy riêng. Artifact GitHub chỉ giữ
+report/index/source nhỏ, **không giữ checkpoint nhiều GB**; trọng số local giao riêng trong
+hội thoại. Không claim file index là trọng số tải được. Chưa nghiệm thu BF16/GPU GTX 1070.
 
-Checkpoint EXP-01/EXP-02 không tương thích trực tiếp Ollama/GGUF. Codec byte thí nghiệm không
-thay quyết định tokenizer sản phẩm. H2LM 2–3B chưa được pretrain; M1 corpus/tokenizer vẫn ACTIVE.
-
-## Các công cụ đã có
+## Các phần trước vẫn được giữ
 
 | Công việc | Điểm chạy / tài liệu |
 |---|---|
-| Train và kiểm tokenizer mẫu | `RUN_TOKENIZER_DEMO.cmd`, docs/05_TOKENIZER.md |
-| Chuẩn bị corpus TXT / so sánh tokenizer | `RUN_CORPUS_BENCHMARK.cmd`, docs/07_CORPUS_AND_BENCHMARK.md |
-| Public legal seed | `RUN_PUBLIC_LEGAL_SEED.cmd`, docs/08_PUBLIC_LEGAL_SEED.md; lỗi acquisition TLS còn mở |
+| Tokenizer riêng | `RUN_TOKENIZER_DEMO.cmd`, docs/05_TOKENIZER.md |
+| Corpus TXT / so sánh tokenizer | `RUN_CORPUS_BENCHMARK.cmd`, docs/07_CORPUS_AND_BENCHMARK.md |
+| Public legal seed | `RUN_PUBLIC_LEGAL_SEED.cmd`, docs/08_PUBLIC_LEGAL_SEED.md; TLS acquisition còn lỗi |
 | Chuẩn bị ảnh PDF scan local | `RUN_SCAN_PREPARE.cmd`, docs/09_SCAN_FIRST.md |
-| Đối chiếu ba bản scan thật | `RUN_REAL_SCAN_REVIEW.cmd`, docs/10_REAL_SCAN_SEED.md |
-| Neural EXP-01 + resume | `src/h2lm/experiments/`, `configs/training/micro_vlm.yaml` |
-| Neural EXP-02 + resume | `crop2_train.py`, `configs/training/crop_v2.yaml` |
-| Chạy checkpoint EXP-02 trên crop | `scripts/predict_crop_v2.py` |
+| Ba bản scan thật, nhãn AI draft | `RUN_REAL_SCAN_REVIEW.cmd`, docs/10_REAL_SCAN_SEED.md |
+| EXP-01 neural 0,71M | `src/h2lm/experiments/`, docs/11_NEURAL_MICRO_EXPERIMENT.md |
+| EXP-02 neural crop 0,525M | `crop2_train.py`, docs/12_CROP_GENERALIZATION.md |
 
-Không commit hồ sơ riêng tư/dataset lớn/checkpoints trực tiếp vào Git. Ba PDF được người
-dùng cho phép công khai có metadata/nhãn nháp riêng; không suy quyền đó sang tài liệu khác.
-Nhãn gốc `assistant_visual_draft` không bị đổi thành `human_verified` trong thử nghiệm.
+EXP-02: validation synthetic local 88/96, GitHub 82/96; ảnh thật chưa fit 0/6. Adaptation
+riêng fit bốn crop 4/4 nhưng DA700 chưa fit vẫn 0/2. Đó là lỗi còn mở, không bị xóa khi tạo
+1B. Các bộ đo khác nhau không được gộp hoặc so trực tiếp. Nhãn gốc vẫn assistant_visual_draft,
+không tự nâng thành human_verified; ba PDF được phép công khai chỉ theo scope/hash đã ghi.
 
-## Nguồn thiết kế và trạng thái
+## Nguồn thiết kế
 
-README → [Product](docs/00_PRODUCT_SPEC.md) → [Architecture](docs/01_ARCHITECTURE.md) →
-[Data/teachers](docs/02_DATA_AND_TEACHERS.md) → [Roadmap](docs/03_ROADMAP.md) →
-[Editing guide](docs/04_EDITING_GUIDE.md) → [SESSION HANDOFF](docs/06_IMPLEMENTATION_TASKS.md).
-Đọc thêm tài liệu task hiện tại trước sửa; giữ từng bước có bằng chứng. Không dùng loss giảm,
-round-trip tokenizer hay fit vài ảnh để tuyên bố model thông minh/ngang Gemma.
+README → docs/00_PRODUCT_SPEC.md → docs/01_ARCHITECTURE.md → docs/02_DATA_AND_TEACHERS.md
+→ docs/03_ROADMAP.md → docs/06_IMPLEMENTATION_TASKS.md → tài liệu task hiện tại.
+Đích inference GTX 1070 8 GB vẫn là mục tiêu cần đo; số bytes weights không đại diện toàn
+bộ RAM/VRAM chạy model. Chưa có checkpoint sản phẩm đủ tin cậy để đưa ra kết luận pháp lý.

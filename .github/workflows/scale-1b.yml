@@ -1,0 +1,90 @@
+name: H2LM 1B Scale and Training Verification
+on:
+  pull_request:
+    paths:
+      - 'src/h2lm/scale/**'
+      - 'configs/model/h2lm_v1_1b.yaml'
+      - 'tests/test_scale_1b.py'
+      - '.github/workflows/scale-1b.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: h2lm-scale-1b-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  full-1b-cpu:
+    if: github.event.repository.private == false && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      SCALE_FP32_LR: '0.0003'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU dependencies only
+        run: |
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[scan,dev]'
+      - name: Exact scale, forward, masking, streaming equivalence and checkpoint tests
+        run: python -m pytest -q tests/test_scale_1b.py --junitxml=scale-evidence/tests.xml
+      - name: Count without allocating (not accepted as a real run)
+        run: python -m h2lm.scale.runner count > scale-evidence/count.json
+      - name: Allocate and update the full 1B FP32 model, not a reduced surrogate
+        run: |
+          python -u - <<'PY'
+          import os
+          from pathlib import Path
+          from h2lm.scale.config import ScaleConfig
+          from h2lm.scale.runner import run
+          run(ScaleConfig.read('configs/model/h2lm_v1_1b.yaml'), Path('scale-run'),
+              steps=8, lr=float(os.environ['SCALE_FP32_LR']), allow_large=True)
+          PY
+      - name: Reload all parameter shards in a fresh process
+        run: python -u -m h2lm.scale.runner verify --output scale-run --allow-large
+      - name: Retain compact evidence even if an acceptance assertion fails
+        if: always()
+        run: |
+          python - <<'PY'
+          import pathlib, shutil
+          root = pathlib.Path('scale-run')
+          dest = pathlib.Path('scale-evidence')
+          dest.mkdir(exist_ok=True)
+          for p in root.glob('*.json'):
+              shutil.copy2(p, dest/p.name)
+          for p in root.glob('checkpoint-*/index.json'):
+              shutil.copy2(p, dest/(p.parent.name+'-index.json'))
+          PY
+          git rev-parse HEAD > scale-evidence/source-sha.txt
+          git archive --format=zip --output=scale-evidence/H2LM-source.zip HEAD
+      - name: Assert real scale, complete backward, optimization and reload
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('scale-run')
+          r = json.loads((root/'report-0008.json').read_text())
+          assert r['parameters']['unique_parameters'] == 1001571584
+          assert r['parameters']['initialized_storage'] and r['parameters']['aliases'] == 0
+          assert r['training']['completed_steps'] == 8
+          assert all(a['parameters_in_backward'] == 1001571584 for a in r['audit'])
+          assert all(a['tensors_with_nonzero_gradient'] == 361 for a in r['audit'])
+          assert r['final_fixture_loss'] < r['initial_fixture_loss']
+          v = json.loads((root/'reload-0008.json').read_text())
+          assert v['parameters_reloaded'] == 1001571584 and v['matches_saved_prediction']
+          PY
+      - name: Save reports and editable source (no multi-GB artifact upload)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2lm-1b-scale-evidence
+          path: scale-evidence/
+          retention-days: 3
+# Initial FP32 run at 0.003 completed all updates/reload but failed the loss-decrease
+# assertion. Keep that assertion; use a smaller explicit LR, not a smaller model.
+# Full checkpoint is verified inside the job. Only compact evidence persists in Actions.
