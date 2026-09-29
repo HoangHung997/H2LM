@@ -20,7 +20,15 @@ from h2lm.scale.fixture import decode, encode
 from h2lm.scale.model import build, parameter_report
 from h2lm.scale.optim import AuditedSGD
 from h2lm.scale.runner import resource_gate
-from h2lm.scale.storage import digest_file, get_latest, index_at, load_into, save, set_latest, write_json
+from h2lm.scale.storage import (
+    digest_file,
+    get_latest,
+    index_at,
+    load_into,
+    save,
+    set_latest,
+    write_json,
+)
 
 from .data import TASKS, prepare, sample, validate
 

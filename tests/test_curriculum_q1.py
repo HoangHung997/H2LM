@@ -1,15 +1,19 @@
 from __future__ import annotations
+
 import json
 import shutil
 from collections import Counter
 from dataclasses import replace
+
 import pytest
 import torch
+
 from h2lm.curriculum.data import TASKS, alternative, compact, prepare, sample, solve, validate
 from h2lm.curriculum.train import Plan, infer, run, schedule, score, select_training, weighted_loss
 from h2lm.scale.config import tiny_config
 from h2lm.scale.model import build
 from h2lm.scale.storage import get_latest, load_into
+
 
 @pytest.fixture(scope='module')
 def dataset(tmp_path_factory):
@@ -17,9 +21,11 @@ def dataset(tmp_path_factory):
     prepare(root, 12, 301)
     return root / 'manifest.json'
 
+
 @pytest.fixture
 def small_cfg():
     return replace(tiny_config(), max_image_side=256, patch_size=32, resampler_tokens=2, layers=1, vision_layers=1)
+
 
 @pytest.mark.parametrize('key,value', [('steps', 0), ('steps', True), ('steps', 129), ('warmup', 99), ('seconds', 1201), ('max_new_tokens', 999), ('threads', 5), ('peak_lr', float('nan')), ('floor_lr', 0), ('eval_pairs', 0)])
 def test_bounds(key, value):
@@ -59,14 +65,14 @@ def test_counterfactual_changes_answer_not_question(task):
 def test_dataset_shape_scope_and_split(dataset):
     d = validate(dataset)
     assert len(d['records']) == 144
-    assert Counter((r['split'] for r in d['records'])) == {'train': 96, 'validation': 24, 'holdout': 24}
-    assert all((r['font_index'] == 2 for r in d['records'] if r['split'] == 'holdout'))
-    assert all((r['font_index'] in (0, 1) for r in d['records'] if r['split'] != 'holdout'))
+    assert Counter(r['split'] for r in d['records']) == {'train': 96, 'validation': 24, 'holdout': 24}
+    assert all(r['font_index'] == 2 for r in d['records'] if r['split'] == 'holdout')
+    assert all(r['font_index'] in (0, 1) for r in d['records'] if r['split'] != 'holdout')
     sequence = select_training(d, Plan())
-    assert len(sequence) == 48 and all((r['split'] == 'train' for r in sequence))
-    assert set((r['task'] for r in sequence)) == set(TASKS)
+    assert len(sequence) == 48 and all(r['split'] == 'train' for r in sequence)
+    assert {r['task'] for r in sequence} == set(TASKS)
     assert select_training(d, Plan()) == sequence
-    assert all((r['task'] == 'read' for r in sequence[:12]))
+    assert all(r['task'] == 'read' for r in sequence[:12])
 
 
 def changed_manifest(dataset, tmp_path, mutate):
@@ -153,7 +159,7 @@ def test_segment_resume_weights_equal(dataset, tmp_path, small_cfg):
     m1, m2 = (build(small_cfg), build(small_cfg))
     load_into(m1, get_latest(tmp_path / 'full'))
     load_into(m2, get_latest(tmp_path / 'seg'))
-    assert all((torch.equal(a, b) for a, b in zip(m1.parameters(), m2.parameters())))
+    assert all(torch.equal(a, b) for a, b in zip(m1.parameters(), m2.parameters()))
     assert full['evaluation']['holdout_evaluated'] is False
     assert full['production_ready'] is False
     assert b['training']['curriculum_contract']['manifest_sha256'] == full['training']['curriculum_contract']['manifest_sha256']
