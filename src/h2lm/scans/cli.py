@@ -9,6 +9,8 @@ from pathlib import Path
 from .config import ScanConfig
 from .ingest import prepare_pdf
 
+logger = logging.getLogger(__name__)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Local scan images/tiles, NOT OCR or neural inference")
@@ -61,7 +63,7 @@ def main() -> int:
         print("Interrupted; partial output is not a completed dataset.", file=sys.stderr)
         return 130
     except Exception:
-        logging.exception("Scan preparation failed")
+        logger.exception("Scan preparation failed")
         return 2
 
 
